@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "654348463582",
+    "project_id": "cajaicafecontrol",
+    "storage_bucket": "cajaicafecontrol.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:654348463582:android:68d4ad0ba7484953f3014f",
+        "android_client_info": {
+          "package_name": "com.cajaicafecontrol.miapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDjMqXPKKMJUvwpUsErQWb77V9BnyD5gSM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:654348463582:android:ef3ffc1e9f123167f3014f",
+        "android_client_info": {
+          "package_name": "com.example.cajaicafeadministracion"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDjMqXPKKMJUvwpUsErQWb77V9BnyD5gSM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
