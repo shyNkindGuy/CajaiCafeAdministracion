@@ -1,56 +1,46 @@
 package com.example.cajaicafeadministracion;
 
+import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
-import android.view.View;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.TextView;
-
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
 
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 
 public class MainActivity extends AppCompatActivity {
-    EditText editMensaje;
-    Button btnEnviar;
-    TextView txtMensajes;
-    DatabaseReference dbRef = FirebaseDatabase.getInstance().getReference("mensajes");
+    @SuppressLint("NonConstantResourceId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        dbRef.setValue("Hola Mundo al dispositivo 1");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        editMensaje = findViewById(R.id.editMensaje);
-        btnEnviar = findViewById(R.id.btnEnviar);
-        txtMensajes = findViewById(R.id.txtMensajes);
 
+        BottomNavigationView bottomNav = findViewById(R.id.bottom_navigation);
+        bottomNav.setOnItemSelectedListener(item -> {
+            Fragment selectedFragment = null;
 
-        dbRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                String mensaje = dataSnapshot.getValue(String.class);
-                Log.d("FIREBASE", "MENSAJE: " +  mensaje);
+            int itemId = item.getItemId();
+            if (itemId == R.id.nav_venta) {
+                selectedFragment = new VentaFragment();
+            } else if (itemId == R.id.nav_historial) {
+                selectedFragment = new HistorialFragment();
             }
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                Log.d("FIREBASE", "ERROR: " + databaseError.getMessage());
+
+            if (selectedFragment != null) {
+                getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.fragment_container, selectedFragment)
+                        .commit();
+                return true;
             }
+            return false;
         });
-        btnEnviar.setOnClickListener(new View.OnClickListener()  {
-            @Override
-            public void onClick(View view) {
-                String mensaje = editMensaje.getText().toString().trim();
-                if (!mensaje.isEmpty()) {
-                    dbRef.setValue(mensaje);
-                    editMensaje.setText("");
-                }
-            }
-        });
+
+        if (savedInstanceState == null) {
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.fragment_container, new VentaFragment())
+                    .commit();
+        }
     }
+
 }

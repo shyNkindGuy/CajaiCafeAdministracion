@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="tipos_cafe">
+        <item>Bolsa 1/4 kg</item>
+        <item>Bolsa 1/2 kg</item>
+        <item>Bolsa 1 kg</item>
+    </string-array>
+</resources>
