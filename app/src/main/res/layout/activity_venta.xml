@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent" android:layout_height="match_parent"
+    android:padding="16dp">
+
+    <LinearLayout android:orientation="vertical" android:layout_width="match_parent" android:layout_height="wrap_content">
+
+        <TextView android:text="Registrar Venta" android:textSize="20sp" android:layout_marginBottom="12dp"
+            android:layout_width="wrap_content"  android:layout_height="wrap_content"/>
+
+        <Spinner
+            android:id="@+id/spinnerProducto"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:minHeight="48dp" />
+
+        <EditText
+            android:id="@+id/etCantidad"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_marginTop="8dp"
+            android:hint="Cantidad"
+            android:inputType="number"
+            tools:ignore="TouchTargetSizeCheck" />
+
+        <EditText
+            android:id="@+id/etNombre"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_marginTop="8dp"
+            android:hint="Nombre comprador"
+            tools:ignore="TouchTargetSizeCheck" />
+
+        <TextView android:text="Estado de pago" android:layout_marginTop="8dp"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent" />
+
+        <Spinner
+            android:id="@+id/spinnerPago"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:minHeight="48dp" />
+
+        <EditText android:id="@+id/etMontoParcial" android:hint="Monto parcial (si aplica)" android:inputType="numberDecimal" android:visibility="gone" android:layout_marginTop="8dp"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent" />
+
+        <TextView android:id="@+id/tvStock" android:text="Stock disponible: -" android:layout_marginTop="12dp"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent" />
+
+        <Button android:id="@+id/btnRegistrar" android:text="Registrar venta" android:layout_marginTop="16dp"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent" />
+
+        <TextView android:id="@+id/tvMensaje" android:layout_marginTop="12dp"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent" />
+    </LinearLayout>
+</ScrollView>

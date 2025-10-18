@@ -23,7 +23,6 @@ public class MainActivity extends AppCompatActivity {
     DatabaseReference dbRef = FirebaseDatabase.getInstance().getReference("mensajes");
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        dbRef.setValue("Hola Mundo al dispositivo 1");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         editMensaje = findViewById(R.id.editMensaje);
@@ -36,6 +35,7 @@ public class MainActivity extends AppCompatActivity {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 String mensaje = dataSnapshot.getValue(String.class);
                 Log.d("FIREBASE", "MENSAJE: " +  mensaje);
+                txtMensajes.setText(mensaje);
             }
             @Override
             public void onCancelled(DatabaseError databaseError) {
