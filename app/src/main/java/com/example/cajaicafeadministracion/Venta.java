@@ -16,11 +16,11 @@ public class Venta {
     public Venta() {}
     public Venta(String id, String tipo, int i, double v, String pagado, String fecha){}
 
-    public Venta(String id, String fecha, String peso, String nombreComprador, double precioUnitario, int cantidad, String estadoPago, double montoParcial, double total) {
+    public Venta(String id, String fecha, String peso, String cliente, double precioUnitario, int cantidad, String estadoPago, double montoParcial, double total) {
         this.id = id;
         this.fecha = fecha;
         this.peso = peso;
-        this.nombreComprador = nombreComprador;
+        this.cliente = cliente;
         this.precioUnitario = precioUnitario;
         this.cantidad = cantidad;
         this.estadoPago = estadoPago;

@@ -163,20 +163,18 @@ public class VentaFragment extends Fragment {
 
         double total;
 
-        switch (p.nombre) {
-            case "Bolsa 1/2 kg":
-                int pares = cantidad / 2;
-                int impares= cantidad % 2;
-                total = (pares * 45.0) + (impares * 25.0);
-                break;
-            case "Bolsa 1/4 kg":
-                total = cantidad * 15.0;
-                break;
-            case "Bolsa 1 kg":
-                total = cantidad * 45.0;
-                break;
-            default:
-                total = p.precio * cantidad;
+        String nombreProducto = p.nombre.trim();
+
+        if (nombreProducto.contains("1/2")) {
+            int pares = cantidad / 2;
+            int impares = cantidad % 2;
+            total = (pares * 45.0) + (impares * 25.0);
+        } else if (nombreProducto.contains("1/4")) {
+            total = cantidad * 15.0;
+        } else if (nombreProducto.contains("1 kg")) {
+            total = cantidad * 45.0;
+        } else {
+            total = p.precio * cantidad;
         }
 
         tvTotal.setText(String.format(Locale.US, "Total: S/ %.2f", total));

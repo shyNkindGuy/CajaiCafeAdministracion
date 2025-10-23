@@ -48,6 +48,7 @@ public class HistorialFragment extends Fragment {
                     Venta venta = ds.getValue(Venta.class);
                     if (venta != null) listaVentas.add(venta);
                 }
+                Collections.reverse(listaVentas);
                 adapter.notifyDataSetChanged();
             }
 

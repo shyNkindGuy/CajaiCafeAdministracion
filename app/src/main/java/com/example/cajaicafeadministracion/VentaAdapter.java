@@ -33,7 +33,7 @@ public class VentaAdapter extends RecyclerView.Adapter<VentaAdapter.VentaViewHol
     public void onBindViewHolder(@NonNull VentaViewHolder holder, int position) {
         Venta v = lista.get(position);
 
-        holder.tvCliente.setText(v.cliente);
+        holder.tvCliente.setText("Cliente: " + v.cliente);
         holder.tvProducto.setText(v.producto);
         holder.tvCantidad.setText("x" + v.cantidad);
         holder.tvTotal.setText("S/ " + v.total);
