@@ -4,4 +4,8 @@
     <color name="cafeMedio">#6D4C41</color>
     <color name="crema">#F9F4EE</color>
     <color name="navbar_selector">@color/common_google_signin_btn_text_dark_default</color>
+
+    <color name="estadoPagado">#4CAF50</color>
+    <color name="estadoParcial">#FFEB3B</color>
+    <color name="estadoPendiente">#F44336</color>
 </resources>

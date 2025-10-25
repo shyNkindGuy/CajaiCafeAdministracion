@@ -20,6 +20,7 @@
             android:textSize="75px"
             android:textStyle="bold" />
 
+
         <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -28,6 +29,7 @@
             android:backgroundTint="#FFFFFF"
             card_view:cardCornerRadius="16dp"
             card_view:cardElevation="6dp">
+
 
             <LinearLayout
                 android:layout_width="match_parent"

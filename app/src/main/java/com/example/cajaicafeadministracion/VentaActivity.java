@@ -147,7 +147,7 @@ public class VentaActivity extends AppCompatActivity {
         final String idVenta = (key != null) ? key: "v" + System.currentTimeMillis();
 
         //fecha simple
-        String fecha = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(new Date());
+        String fecha = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date());
 
         Venta venta = new Venta(idVenta, fecha, p.nombre, nombre, p.precio, cantidad, estadoPago, montoParcial, total);
 
