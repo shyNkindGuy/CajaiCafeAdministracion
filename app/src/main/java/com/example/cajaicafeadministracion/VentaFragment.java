@@ -166,9 +166,7 @@ public class VentaFragment extends Fragment {
         String nombreProducto = p.nombre.trim();
 
         if (nombreProducto.contains("1/2")) {
-            int pares = cantidad / 2;
-            int impares = cantidad % 2;
-            total = (pares * 45.0) + (impares * 25.0);
+            total = cantidad * 25.0;
         } else if (nombreProducto.contains("1/4")) {
             total = cantidad * 15.0;
         } else if (nombreProducto.contains("1 kg")) {
