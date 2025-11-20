@@ -28,6 +28,7 @@ android {
     namespace = "com.example.cajaicafeadministracion"
     compileSdk = 35
 
+
     defaultConfig {
         applicationId = "com.example.cajaicafeadministracion"
         minSdk = 24
@@ -45,6 +46,12 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+        }
+    }
+    splits{
+        abi{
+            isEnable = true
+            isUniversalApk = true
         }
     }
     compileOptions {
