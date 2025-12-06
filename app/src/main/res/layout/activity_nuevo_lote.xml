@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginBottom="12dp"
+            android:text="Nuevo lote"
+            android:textColor="@color/cafeOscuro"
+            android:textSize="24sp"
+            android:textStyle="bold" />
+
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="16dp"
+            card_view:contentPadding="16dp"
+            android:backgroundTint="#FFFFFF"
+            card_view:cardCornerRadius="16dp"
+            card_view:cardElevation="6dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView android:text="Código de lote" android:textStyle="bold" android:layout_width="wrap_content" android:layout_height="wrap_content" />
+                <EditText android:id="@+id/etCodigoLote" android:layout_width="match_parent" android:layout_height="wrap_content" android:hint="LOTE2-DIC2025" />
+
+                <TextView android:text="A. Café" android:textStyle="bold" android:textColor="@color/cafeMedio" android:layout_marginTop="16dp" android:layout_width="wrap_content" android:layout_height="wrap_content" />
+
+                <TextView android:text="Café pergamino: kg / precio por kg (S/)" android:layout_marginTop="8dp" android:layout_width="wrap_content" android:layout_height="wrap_content" />
+                <LinearLayout android:orientation="horizontal" android:layout_width="match_parent" android:layout_height="wrap_content">
+                    <EditText android:id="@+id/etPergaminoKg" android:layout_width="0dp" android:layout_weight="1" android:layout_marginEnd="8dp" android:inputType="numberDecimal" android:hint="kg" android:layout_height="wrap_content" />
+                    <EditText android:id="@+id/etPergaminoPrecio" android:layout_width="0dp" android:layout_weight="1" android:inputType="numberDecimal" android:hint="S//kg" android:layout_height="wrap_content" />
+                </LinearLayout>
+
+                <TextView android:text="Servicio x pilado: kg / precio por kg (S/)" android:layout_marginTop="8dp" android:layout_width="wrap_content" android:layout_height="wrap_content" />
+                <LinearLayout android:orientation="horizontal" android:layout_width="match_parent" android:layout_height="wrap_content">
+                    <EditText android:id="@+id/etPiladoKg" android:layout_width="0dp" android:layout_weight="1" android:layout_marginEnd="8dp" android:inputType="numberDecimal" android:hint="kg" android:layout_height="wrap_content" />
+                    <EditText android:id="@+id/etPiladoPrecio" android:layout_width="0dp" android:layout_weight="1" android:inputType="numberDecimal" android:hint="S//kg" android:layout_height="wrap_content" />
+                </LinearLayout>
+
+                <TextView android:text="Servicio x tostado: kg / precio por kg (S/)" android:layout_marginTop="8dp" android:layout_width="wrap_content" android:layout_height="wrap_content" />
+                <LinearLayout android:orientation="horizontal" android:layout_width="match_parent" android:layout_height="wrap_content">
+                    <EditText android:id="@+id/etTostadoKg" android:layout_width="0dp" android:layout_weight="1" android:layout_marginEnd="8dp" android:inputType="numberDecimal" android:hint="kg" android:layout_height="wrap_content" />
+                    <EditText android:id="@+id/etTostadoPrecio" android:layout_width="0dp" android:layout_weight="1" android:inputType="numberDecimal" android:hint="S//kg" android:layout_height="wrap_content" />
+                </LinearLayout>
+
+                <TextView android:text="Transporte (flete) — total S/" android:layout_marginTop="8dp" android:layout_width="wrap_content" android:layout_height="wrap_content" />
+                <EditText android:id="@+id/etFlete" android:layout_width="match_parent" android:inputType="numberDecimal" android:hint="0.00" android:layout_height="wrap_content" />
+
+                <TextView android:text="B. Electricidad (selladora + moledora)" android:textStyle="bold" android:textColor="@color/cafeMedio" android:layout_marginTop="16dp" android:layout_width="wrap_content" android:layout_height="wrap_content" />
+
+                <TextView android:text="Selladora: potencia (kW) / horas de uso" android:layout_marginTop="8dp" android:layout_width="wrap_content" android:layout_height="wrap_content" />
+                <LinearLayout android:orientation="horizontal" android:layout_width="match_parent" android:layout_height="wrap_content">
+                    <EditText android:id="@+id/etPotSelladora" android:layout_width="0dp" android:layout_weight="1" android:layout_marginEnd="8dp" android:inputType="numberDecimal" android:hint="kW" android:layout_height="wrap_content" />
+                    <EditText android:id="@+id/etHorasSelladora" android:layout_width="0dp" android:layout_weight="1" android:inputType="numberDecimal" android:hint="horas" android:layout_height="wrap_content" />
+                </LinearLayout>
+
+                <TextView android:text="Moledora: potencia (kW) / horas de uso" android:layout_marginTop="8dp" android:layout_width="wrap_content" android:layout_height="wrap_content" />
+                <LinearLayout android:orientation="horizontal" android:layout_width="match_parent" android:layout_height="wrap_content">
+                    <EditText android:id="@+id/etPotMoledora" android:layout_width="0dp" android:layout_weight="1" android:layout_marginEnd="8dp" android:inputType="numberDecimal" android:hint="kW" android:layout_height="wrap_content" />
+                    <EditText android:id="@+id/etHorasMoledora" android:layout_width="0dp" android:layout_weight="1" android:inputType="numberDecimal" android:hint="horas" android:layout_height="wrap_content" />
+                </LinearLayout>
+
+                <TextView android:text="Precio por kWh (según tu recibo de luz)" android:layout_marginTop="8dp" android:layout_width="wrap_content" android:layout_height="wrap_content" />
+                <EditText android:id="@+id/etPrecioKwh" android:layout_width="match_parent" android:inputType="numberDecimal" android:hint="0.65" android:layout_height="wrap_content" />
+
+                <TextView android:text="C. Empaque (temporal — total S/ de bolsas + stickers de esta compra)" android:textStyle="bold" android:textColor="@color/cafeMedio" android:layout_marginTop="16dp" android:layout_width="wrap_content" android:layout_height="wrap_content" />
+                <EditText android:id="@+id/etEmpaqueTotal" android:layout_width="match_parent" android:inputType="numberDecimal" android:hint="0.00" android:layout_height="wrap_content" />
+
+                <TextView android:text="Stock inicial de este lote (bolsas ya empacadas, si las hay)" android:textStyle="bold" android:textColor="@color/cafeMedio" android:layout_marginTop="16dp" android:layout_width="wrap_content" android:layout_height="wrap_content" />
+                <LinearLayout android:orientation="horizontal" android:layout_width="match_parent" android:layout_height="wrap_content">
+                    <EditText android:id="@+id/etStockBolsas12" android:layout_width="0dp" android:layout_weight="1" android:layout_marginEnd="8dp" android:inputType="number" android:hint="Bolsas 1/2kg" android:layout_height="wrap_content" />
+                    <EditText android:id="@+id/etStockBolsas14" android:layout_width="0dp" android:layout_weight="1" android:inputType="number" android:hint="Bolsas 1/4kg" android:layout_height="wrap_content" />
+                </LinearLayout>
+
+                <Button
+                    android:id="@+id/btnGuardarLote"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:backgroundTint="@color/cafeOscuro"
+                    android:textColor="#FFFFFF"
+                    android:text="Guardar lote" />
+
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+    </LinearLayout>
+</ScrollView>

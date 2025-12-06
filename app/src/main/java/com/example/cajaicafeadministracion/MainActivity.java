@@ -1,7 +1,6 @@
 package com.example.cajaicafeadministracion;
 
 import android.annotation.SuppressLint;
-import android.content.Intent;
 import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
@@ -25,6 +24,10 @@ public class MainActivity extends AppCompatActivity {
                 selectedFragment = new VentaFragment();
             } else if (itemId == R.id.nav_historial) {
                 selectedFragment = new HistorialFragment();
+            } else if (itemId == R.id.nav_lotes) {
+                selectedFragment = new LotesFragment();
+            } else if (itemId == R.id.nav_dashboard) {
+                selectedFragment = new DashboardFragment();
             }
 
             if (selectedFragment != null) {
