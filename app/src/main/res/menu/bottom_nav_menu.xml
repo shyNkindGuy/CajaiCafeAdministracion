@@ -9,4 +9,8 @@
         android:id="@+id/nav_historial"
         android:icon="@drawable/ic_history"
         android:title="Historial" />
+    <item
+        android:id="@+id/nav_dashboard"
+        android:icon="@android:drawable/ic_menu_sort_by_size"
+        android:title="Reportes" />
 </menu>

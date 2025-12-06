@@ -25,6 +25,8 @@ public class MainActivity extends AppCompatActivity {
                 selectedFragment = new VentaFragment();
             } else if (itemId == R.id.nav_historial) {
                 selectedFragment = new HistorialFragment();
+            }else if (itemId == R.id.nav_dashboard) {
+                selectedFragment = new DashboardFragment();
             }
 
             if (selectedFragment != null) {
