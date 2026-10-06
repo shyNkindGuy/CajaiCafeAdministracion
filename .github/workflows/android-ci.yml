@@ -1,0 +1,47 @@
+name: Android CI
+
+# Compila la app en cada PR y en cada push a master.
+# El APK de debug queda como artefacto descargable del run, para instalarlo
+# en el celular y probarlo ANTES de aprobar el merge desde GitHub Mobile.
+
+on:
+  pull_request:
+  push:
+    branches: [master]
+  workflow_dispatch:
+
+concurrency:
+  group: android-ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # versionCode/versionName salen de `git rev-list --count HEAD`
+          # (app/build.gradle.kts), así que hace falta el historial completo.
+          fetch-depth: 0
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - uses: gradle/actions/setup-gradle@v4
+
+      - name: Compilar APK debug
+        run: ./gradlew assembleDebug --stacktrace
+
+      - name: Tests unitarios
+        run: ./gradlew testDebugUnitTest
+
+      - name: Subir APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: cajai-cafe-debug-apk
+          path: app/build/outputs/apk/debug/*universal*.apk
+          if-no-files-found: error
+          retention-days: 14
