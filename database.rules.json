@@ -1,0 +1,29 @@
+{
+  "rules": {
+    ".read": false,
+    ".write": false,
+    "usuarios": {
+      "$uid": {
+        ".read": "auth != null && auth.uid === $uid",
+        ".write": false
+      }
+    },
+    "productos": {
+      ".read": "auth != null && root.child('usuarios').child(auth.uid).val() === true",
+      ".write": "auth != null && root.child('usuarios').child(auth.uid).val() === true"
+    },
+    "ventas": {
+      ".read": "auth != null && root.child('usuarios').child(auth.uid).val() === true",
+      ".write": "auth != null && root.child('usuarios').child(auth.uid).val() === true",
+      ".indexOn": ["loteId", "fecha"]
+    },
+    "lotes": {
+      ".read": "auth != null && root.child('usuarios').child(auth.uid).val() === true",
+      ".write": "auth != null && root.child('usuarios').child(auth.uid).val() === true"
+    },
+    "gastos": {
+      ".read": "auth != null && root.child('usuarios').child(auth.uid).val() === true",
+      ".write": "auth != null && root.child('usuarios').child(auth.uid).val() === true"
+    }
+  }
+}

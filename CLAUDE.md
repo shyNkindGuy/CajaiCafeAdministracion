@@ -10,6 +10,13 @@ molido con moledora propia → empacado en bolsas de 1/2 kg y 1/4 kg → venta.
 - `versionCode`/`versionName` se calculan con `git rev-list --count HEAD` (`app/build.gradle.kts`).
 - Package: `com.example.cajaicafeadministracion` (todo en un solo paquete, sin capas todavía).
 
+## Acceso
+`LogoActivity` (splash) → `LoginActivity` si no hay sesión → `MainActivity`. Login con correo y
+contraseña de **Firebase Auth**, sin registro en la app: las cuentas se crean en la consola y solo
+entran las que estén en `usuarios/{uid} = true`. Cerrar sesión está al final de la pestaña Reportes.
+Las reglas de la base de datos viven en `database.rules.json` (se publican a mano en la consola o
+con `firebase deploy --only database`); cada nodo nuevo necesita su entrada ahí o quedará bloqueado.
+
 ## Pantallas (bottom nav en `MainActivity`)
 | Tab | Clase | Qué hace |
 |---|---|---|
@@ -24,7 +31,8 @@ molido con moledora propia → empacado en bolsas de 1/2 kg y 1/4 kg → venta.
 - `productos/{id}`: `nombre, precio, stock` (catálogo global)
 - `ventas/{id}`: `fecha, producto, cliente, precioUnitario, cantidad, estadoPago (pagado|parcial|pendiente), montoParcial, total, loteId`
 - `lotes/{id}`: costos (pergamino/pilado/tostado kg×precio, flete, electricidad kW×h×S//kWh, empaque), `totalGastos`, `stockBolsas12`, `stockBolsas14`, `estado (abierto|cerrado)`
-- Pendiente de crear: `gastosGenerales/` (gastos que no son de un costal: alquiler, mantenimiento, etc.)
+- `usuarios/{uid}`: `true` para cada cuenta autorizada (solo se edita desde la consola)
+- Pendiente de crear: `gastos/` (gastos que no son de un costal: empaque, alquiler, mantenimiento, etc.; ya tiene regla)
 
 ## Deuda conocida (no re-descubrir; ver `docs/PLAN.md` para el orden de trabajo)
 - `VentaFragment.calcularTotal()` usa precios **hardcodeados** (1/2 kg = 25, 1/4 kg = 15, 1 kg = 45) e ignora `Producto.precio`; además guarda `precioUnitario = p.precio`, así que `precioUnitario × cantidad ≠ total`.
@@ -32,7 +40,8 @@ molido con moledora propia → empacado en bolsas de 1/2 kg y 1/4 kg → venta.
 - `VentaFragment` **no asigna `loteId`** ni descuenta el stock del lote → el detalle de lote siempre muestra S/ 0 en ventas.
 - `DashboardFragment`: el campo "Lote" no filtra nada; el PDF escribe directo en Descargas públicas (falla con scoped storage en Android 10+); no es comprobante SUNAT.
 - Ningún `ValueEventListener` se quita en `onDestroyView` (se acumulan al cambiar de tab).
-- No hay Firebase Auth en uso aunque la dependencia está. El repo es **público** y `google-services.json` está commiteado → las reglas de la base de datos DEBEN exigir `auth != null`.
+- El repo es **público** y `google-services.json` está commiteado: cualquiera puede crear una cuenta
+  de Firebase Auth con esa API key. Por eso las reglas piden estar en `usuarios/`, no solo `auth != null`.
 - `AndroidManifest.xml` declara `.HistorialFragment` como `<activity>` (es un Fragment).
 - `app/debug/app-debug.aab` (10 MB) está versionado.
 
