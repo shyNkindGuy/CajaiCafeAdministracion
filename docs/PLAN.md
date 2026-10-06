@@ -7,7 +7,7 @@ celular. Reglas completas en `CLAUDE.md`.
 Leyenda: `[ ]` pendiente · `[x]` hecha (se marca dentro del PR que la resuelve)
 
 ## Fase 0 — Seguridad y orden (urgente: el repo es público)
-- [ ] **0.1 Login + reglas de base de datos.** Firebase Auth email/contraseña (2 cuentas, sin
+- [x] **0.1 Login + reglas de base de datos.** Firebase Auth email/contraseña (2 cuentas, sin
   registro abierto), pantalla de login antes de `MainActivity`, cerrar sesión. Agregar
   `database.rules.json` con `auth != null` en `productos`, `ventas`, `lotes`, `gastos` e
   `.indexOn: ["loteId", "fecha"]` en `ventas`. En el PR, explicar cómo publicar las reglas

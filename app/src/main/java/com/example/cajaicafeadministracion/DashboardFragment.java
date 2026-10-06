@@ -1,5 +1,7 @@
 package com.example.cajaicafeadministracion;
 
+import android.app.AlertDialog;
+import android.content.Intent;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -13,6 +15,8 @@ import android.widget.*;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.*;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -46,7 +50,26 @@ public class DashboardFragment extends Fragment {
 
         btnExportar.setOnClickListener(v -> generarPDF());
 
+        TextView tvSesion = view.findViewById(R.id.tvSesion);
+        FirebaseUser usuario = FirebaseAuth.getInstance().getCurrentUser();
+        tvSesion.setText(usuario != null ? "Sesión: " + usuario.getEmail() : "Sin sesión");
+        view.findViewById(R.id.btnCerrarSesion).setOnClickListener(v -> confirmarCierreSesion());
+
         return view;
+    }
+
+    private void confirmarCierreSesion() {
+        new AlertDialog.Builder(requireContext())
+                .setTitle("Cerrar sesión")
+                .setMessage("¿Quieres salir de tu cuenta en este celular?")
+                .setPositiveButton("Salir", (dialog, which) -> {
+                    FirebaseAuth.getInstance().signOut();
+                    Intent intent = new Intent(requireContext(), LoginActivity.class);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    startActivity(intent);
+                })
+                .setNegativeButton("Cancelar", null)
+                .show();
     }
 
     private void cargarDatos() {
