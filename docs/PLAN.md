@@ -12,7 +12,7 @@ Leyenda: `[ ]` pendiente · `[x]` hecha (se marca dentro del PR que la resuelve)
   `database.rules.json` con `auth != null` en `productos`, `ventas`, `lotes`, `gastos` e
   `.indexOn: ["loteId", "fecha"]` en `ventas`. En el PR, explicar cómo publicar las reglas
   desde la consola de Firebase.
-- [ ] **0.2 Limpieza.** Borrar `VentaActivity.java` (el layout `activity_venta.xml` sí lo usa
+- [x] **0.2 Limpieza.** Borrar `VentaActivity.java` (el layout `activity_venta.xml` sí lo usa
   `VentaFragment`: no borrarlo), quitar `.HistorialFragment` del manifest, sacar `app/debug/app-debug.aab` del repo y agregar
   `*.aab`/`*.apk` al `.gitignore`.
 - [ ] **0.3 Listeners y ciclo de vida.** Quitar cada `ValueEventListener` en `onDestroyView`/
