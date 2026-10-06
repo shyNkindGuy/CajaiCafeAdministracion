@@ -13,3 +13,7 @@
 .externalNativeBuild
 .cxx
 local.properties
+
+# Binarios generados (APK/AAB): se descargan del CI, no se versionan
+*.apk
+*.aab
