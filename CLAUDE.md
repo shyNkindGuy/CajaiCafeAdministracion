@@ -25,8 +25,6 @@ con `firebase deploy --only database`); cada nodo nuevo necesita su entrada ahí
 | Lotes | `LotesFragment` → `NuevoLoteActivity`, `LoteDetalleActivity` | Costeo por costal, stock por lote, cerrar lote |
 | Reportes | `DashboardFragment` | Totales de bolsas, total cobrado, PDF interno |
 
-`VentaActivity` es código muerto (duplicado de `VentaFragment`, no está en la navegación).
-
 ## Nodos de Firebase
 - `productos/{id}`: `nombre, precio, stock` (catálogo global)
 - `ventas/{id}`: `fecha, producto, cliente, precioUnitario, cantidad, estadoPago (pagado|parcial|pendiente), montoParcial, total, loteId`
@@ -42,8 +40,6 @@ con `firebase deploy --only database`); cada nodo nuevo necesita su entrada ahí
 - Ningún `ValueEventListener` se quita en `onDestroyView` (se acumulan al cambiar de tab).
 - El repo es **público** y `google-services.json` está commiteado: cualquiera puede crear una cuenta
   de Firebase Auth con esa API key. Por eso las reglas piden estar en `usuarios/`, no solo `auth != null`.
-- `AndroidManifest.xml` declara `.HistorialFragment` como `<activity>` (es un Fragment).
-- `app/debug/app-debug.aab` (10 MB) está versionado.
 
 ## Comandos
 ```bash
