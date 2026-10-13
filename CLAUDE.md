@@ -25,6 +25,9 @@ con `firebase deploy --only database`); cada nodo nuevo necesita su entrada ahí
 | Lotes | `LotesFragment` → `NuevoLoteActivity`, `LoteDetalleActivity` | Costeo por costal, stock por lote, cerrar lote |
 | Reportes | `DashboardFragment` | Totales de bolsas, total cobrado, PDF interno |
 
+Precios: el total de una venta se calcula solo en `PrecioCalculator` (precio de `productos/{id}/precio`
+× cantidad, con tests). Nada de precios escritos en el código: el precio se cambia en Firebase.
+
 Convención: todo `addValueEventListener` guarda el listener en un campo y se quita en
 `onDestroyView` (fragments) u `onDestroy` (activities). En callbacks asíncronos no usar
 `requireContext()`: usar el contexto de la app capturado antes, y `getView() != null` antes de tocar vistas.
@@ -37,8 +40,6 @@ Convención: todo `addValueEventListener` guarda el listener en un campo y se qu
 - Pendiente de crear: `gastos/` (gastos que no son de un costal: empaque, alquiler, mantenimiento, etc.; ya tiene regla)
 
 ## Deuda conocida (no re-descubrir; ver `docs/PLAN.md` para el orden de trabajo)
-- `VentaFragment.calcularTotal()` usa precios **hardcodeados** (1/2 kg = 25, 1/4 kg = 15, 1 kg = 45) e ignora `Producto.precio`; además guarda `precioUnitario = p.precio`, así que `precioUnitario × cantidad ≠ total`.
-- Cambiar de producto en el spinner **no recalcula** el total; `registrarVenta()` lee el total parseando el texto del `TextView`.
 - `VentaFragment` **no asigna `loteId`** ni descuenta el stock del lote → el detalle de lote siempre muestra S/ 0 en ventas.
 - `DashboardFragment`: el campo "Lote" no filtra nada; el PDF escribe directo en Descargas públicas (falla con scoped storage en Android 10+); no es comprobante SUNAT.
 - El repo es **público** y `google-services.json` está commiteado: cualquiera puede crear una cuenta
