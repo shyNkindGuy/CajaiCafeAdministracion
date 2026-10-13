@@ -17,7 +17,7 @@ import java.util.*;
 
 public class VentaFragment extends Fragment {
 
-    Spinner spinnerProducto, spinnerPago;
+    Spinner spinnerProducto, spinnerPago, spinnerLote;
     EditText etCantidad, etNombre, etMontoParcial;
     TextView tvStock, tvMensaje, tvTotal;
     Button btnRegistrar;
@@ -29,6 +29,12 @@ public class VentaFragment extends Fragment {
     ArrayAdapter<String> productoAdapter;
     ValueEventListener productosListener;
 
+    // Lotes abiertos (FIFO): las bolsas de 1/2 y 1/4 kg se descuentan del lote elegido.
+    DatabaseReference lotesRef;
+    ValueEventListener lotesListener;
+    final List<Lote> lotesAbiertos = new ArrayList<>();
+    String loteElegidoId; // lote elegido a mano (distinto del sugerido); null = seguir la sugerencia FIFO
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
@@ -38,6 +44,7 @@ public class VentaFragment extends Fragment {
 
         spinnerProducto = view.findViewById(R.id.spinnerProducto);
         spinnerPago = view.findViewById(R.id.spinnerPago);
+        spinnerLote = view.findViewById(R.id.spinnerLote);
         etCantidad = view.findViewById(R.id.etCantidad);
         etNombre = view.findViewById(R.id.etNombre);
         etMontoParcial = view.findViewById(R.id.etMontoParcial);
@@ -48,6 +55,7 @@ public class VentaFragment extends Fragment {
 
         productosRef = FirebaseDatabase.getInstance().getReference("productos");
         ventasRef = FirebaseDatabase.getInstance().getReference("ventas");
+        lotesRef = FirebaseDatabase.getInstance().getReference("lotes");
 
         // Spinner de estado de pago
         ArrayAdapter<String> pagoAdapter = new ArrayAdapter<>(requireContext(),
@@ -75,12 +83,8 @@ public class VentaFragment extends Fragment {
         spinnerProducto.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                if (position >= 0 && position < productoIds.size()) {
-                    String pid = productoIds.get(position);
-                    Producto p = productoMap.get(pid);
-                    if (p != null) tvStock.setText("Stock disponible: " + p.stock);
-                }
-                // Cambiar de bolsa con la cantidad ya escrita debe actualizar el total.
+                // Otra bolsa puede salir de otro lote (FIFO) y cambia el total.
+                elegirLote();
                 calcularTotal();
             }
             @Override
@@ -106,11 +110,7 @@ public class VentaFragment extends Fragment {
 
                 productoAdapter.notifyDataSetChanged();
 
-                if (!productoIds.isEmpty()) {
-                    Producto first = productoMap.get(productoIds.get(0));
-                    if (first != null)
-                        tvStock.setText("Stock disponible: " + first.stock);
-                }
+                elegirLote();
                 // Si el precio cambió en Firebase, el total en pantalla se actualiza solo.
                 calcularTotal();
             }
@@ -118,6 +118,47 @@ public class VentaFragment extends Fragment {
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
                 tvMensaje.setText("Error cargando productos: " + error.getMessage());
+            }
+        });
+
+        // Spinner de lotes abiertos
+        mostrarLotes();
+
+        spinnerLote.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                // Un lote distinto del sugerido es una elección a mano (el costal que se abrió): se respeta.
+                if (position >= 0 && position < lotesAbiertos.size()) {
+                    boolean esSugerido = position == StockLote.sugerido(lotesAbiertos, campoStockSeleccionado());
+                    loteElegidoId = esSugerido ? null : lotesAbiertos.get(position).id;
+                }
+                actualizarStock();
+            }
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {}
+        });
+
+        lotesListener = lotesRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                List<Lote> todos = new ArrayList<>();
+                for (DataSnapshot ds : snapshot.getChildren()) {
+                    Lote l = ds.getValue(Lote.class);
+                    if (l != null) {
+                        l.id = ds.getKey();
+                        todos.add(l);
+                    }
+                }
+                lotesAbiertos.clear();
+                lotesAbiertos.addAll(StockLote.abiertosFifo(todos));
+                mostrarLotes();
+                // Después de una venta el stock cambia: si el lote se quedó sin bolsas pasa al siguiente (FIFO).
+                elegirLote();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                tvMensaje.setText("Error cargando lotes: " + error.getMessage());
             }
         });
 
@@ -142,7 +183,66 @@ public class VentaFragment extends Fragment {
     public void onDestroyView() {
         // Cada cambio de pestaña crea un fragment nuevo: sin esto los listeners se acumulan.
         if (productosListener != null) productosRef.removeEventListener(productosListener);
+        if (lotesListener != null) lotesRef.removeEventListener(lotesListener);
         super.onDestroyView();
+    }
+
+    /**
+     * Pone en el selector el lote elegido a mano si todavía tiene bolsas del producto; si no, el
+     * abierto más antiguo que tenga (FIFO). Ver StockLote.elegido.
+     */
+    private void elegirLote() {
+        int pos = StockLote.elegido(lotesAbiertos, campoStockSeleccionado(), loteElegidoId);
+        if (pos < 0 || !lotesAbiertos.get(pos).id.equals(loteElegidoId)) loteElegidoId = null;
+        if (pos >= 0) spinnerLote.setSelection(pos);
+        actualizarStock();
+    }
+
+    /**
+     * Adaptador nuevo en cada cambio de lotes: con notifyDataSetChanged el Spinner vuelve a la
+     * posición anterior en su siguiente layout y se pierde el setSelection de elegirLote().
+     */
+    private void mostrarLotes() {
+        List<String> nombres = new ArrayList<>();
+        for (Lote l : lotesAbiertos) nombres.add(StockLote.etiqueta(l));
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(spinnerLote.getContext(),
+                android.R.layout.simple_spinner_item, nombres);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinnerLote.setAdapter(adapter);
+    }
+
+    /** Campo de stock del lote que usa el producto elegido, o null si no sale de lotes. */
+    @Nullable
+    private String campoStockSeleccionado() {
+        Producto p = productoSeleccionado();
+        return (p == null) ? null : StockLote.campoStock(p.id);
+    }
+
+    @Nullable
+    private Lote loteSeleccionado() {
+        int pos = spinnerLote.getSelectedItemPosition();
+        if (pos < 0 || pos >= lotesAbiertos.size()) return null;
+        return lotesAbiertos.get(pos);
+    }
+
+    /** Muestra el stock que va a usar la venta: el del lote (1/2 y 1/4 kg) o el del producto. */
+    private void actualizarStock() {
+        Producto p = productoSeleccionado();
+        if (p == null) {
+            tvStock.setText("Stock disponible: -");
+            return;
+        }
+        String campo = StockLote.campoStock(p.id);
+        if (campo == null) {
+            tvStock.setText("Stock disponible: " + p.stock);
+            return;
+        }
+        Lote lote = loteSeleccionado();
+        if (lote == null) {
+            tvStock.setText("No hay lotes abiertos: crea uno en la pestaña Lotes");
+        } else {
+            tvStock.setText("Stock en " + lote.codigo + ": " + StockLote.stockDe(lote, campo) + " bolsas");
+        }
     }
 
     /** Muestra el total con el precio y la oferta de Firebase del producto elegido (ver PrecioCalculator). */
@@ -196,9 +296,30 @@ public class VentaFragment extends Fragment {
             return;
         }
 
-        if (cantidad > p.stock) {
-            Toast.makeText(requireContext(), "No hay suficiente stock", Toast.LENGTH_SHORT).show();
-            return;
+        // 1/2 y 1/4 kg salen del lote (stockBolsas12/14); 1 kg y grano, de productos/{id}/stock.
+        Lote lote = loteSeleccionado();
+        String campoLote = StockLote.campoStock(pid);
+        final String loteId = (lote != null) ? lote.id : null;
+        final DatabaseReference stockRef;
+        if (campoLote != null) {
+            if (lote == null) {
+                Toast.makeText(requireContext(), "No hay lotes abiertos. Crea uno en la pestaña Lotes y registra el empacado.",
+                        Toast.LENGTH_LONG).show();
+                return;
+            }
+            int disponible = StockLote.stockDe(lote, campoLote);
+            if (cantidad > disponible) {
+                Toast.makeText(requireContext(), "El lote " + lote.codigo + " solo tiene " + disponible + " bolsas de " + p.nombre
+                        + ". Registra el empacado en la pestaña Lotes o elige otro lote.", Toast.LENGTH_LONG).show();
+                return;
+            }
+            stockRef = lotesRef.child(lote.id).child(campoLote);
+        } else {
+            if (cantidad > p.stock) {
+                Toast.makeText(requireContext(), "No hay suficiente stock", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            stockRef = productosRef.child(pid).child("stock");
         }
 
         if (!PrecioCalculator.precioValido(p.precio)) {
@@ -239,9 +360,9 @@ public class VentaFragment extends Fragment {
         final String idVenta = (key != null) ? key : "v" + System.currentTimeMillis();
         String fecha = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(new Date());
 
-        Venta venta = new Venta(idVenta, fecha, p.nombre, nombre, p.precio, cantidad, estadoPago, montoParcial, total);
+        // loteId también en 1 kg y grano: así el detalle del lote cuenta todo lo que se vendió de ese costal.
+        Venta venta = new Venta(idVenta, fecha, p.nombre, nombre, p.precio, cantidad, estadoPago, montoParcial, total, loteId);
 
-        DatabaseReference stockRef = productosRef.child(pid).child("stock");
         int finalCantidad = cantidad;
         // Las respuestas de Firebase pueden llegar después de cambiar de pestaña: requireContext()
         // lanzaría una excepción. El contexto de la app sigue vivo y el aviso se ve igual.
@@ -260,8 +381,13 @@ public class VentaFragment extends Fragment {
 
             @Override
             public void onComplete(@Nullable DatabaseError error, boolean committed, @Nullable DataSnapshot currentData) {
-                if (error != null || !committed) {
-                    Toast.makeText(appCtx, "Error actualizando stock", Toast.LENGTH_SHORT).show();
+                if (error != null) {
+                    Toast.makeText(appCtx, "Error actualizando stock: " + error.getMessage(), Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                // No se guardó (otra venta se llevó las bolsas) o el campo de stock no existe en Firebase.
+                if (!committed || currentData == null || currentData.getValue() == null) {
+                    Toast.makeText(appCtx, "Stock insuficiente: la venta no se registró", Toast.LENGTH_LONG).show();
                     return;
                 }
 

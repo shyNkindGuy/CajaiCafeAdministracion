@@ -22,7 +22,7 @@ Leyenda: `[ ]` pendiente · `[x]` hecha (se marca dentro del PR que la resuelve)
 - [x] **1.1 Precio único de verdad.** Mover el cálculo a una clase pura `PrecioCalculator`
   (con tests), usar `Producto.precio` de Firebase, borrar el hardcode, recalcular al cambiar de
   producto y guardar el total como `double` (no parseando el `TextView`).
-- [ ] **1.2 Venta ligada a lote.** Selector de lote abierto en la venta (sugerir el más antiguo
+- [x] **1.2 Venta ligada a lote.** Selector de lote abierto en la venta (sugerir el más antiguo
   con stock — FIFO), guardar `loteId` y descontar `stockBolsas12/14` del lote con
   `runTransaction`. Con esto `LoteDetalleActivity` empieza a mostrar ventas reales.
 - [ ] **1.3 Borrar venta devuelve stock.** Transacción inversa sobre producto y lote.

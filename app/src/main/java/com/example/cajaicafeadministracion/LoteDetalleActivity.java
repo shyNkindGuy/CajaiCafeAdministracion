@@ -124,8 +124,8 @@ public class LoteDetalleActivity extends AppCompatActivity {
     private double cobradoAcumulado = 0;
 
     private void cargarVentasDelLote() {
-        // Requiere loteId dentro de cada venta (se agrega cuando se conecte VentaFragment).
-        // Mientras tanto, esta consulta simplemente no encontrará nada y mostrará S/0.00 — no falla.
+        // VentaFragment guarda el loteId del lote elegido en cada venta. Las ventas anteriores a eso
+        // no tienen loteId y no aparecen aquí.
         ventasDelLote = ventasRef.orderByChild("loteId").equalTo(loteId);
         ventasListener = ventasDelLote.addValueEventListener(new ValueEventListener() {
             @Override
