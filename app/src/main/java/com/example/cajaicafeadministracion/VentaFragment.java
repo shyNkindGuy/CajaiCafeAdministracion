@@ -80,6 +80,8 @@ public class VentaFragment extends Fragment {
                     Producto p = productoMap.get(pid);
                     if (p != null) tvStock.setText("Stock disponible: " + p.stock);
                 }
+                // Cambiar de bolsa con la cantidad ya escrita debe actualizar el total.
+                calcularTotal();
             }
             @Override
             public void onNothingSelected(AdapterView<?> parent) {}
@@ -97,7 +99,7 @@ public class VentaFragment extends Fragment {
                     if (p != null) {
                         if (p.id == null) p.id = ds.getKey();
                         productoMap.put(p.id, p);
-                        productoNombres.add(p.nombre + " (S/" + p.precio + ")");
+                        productoNombres.add(PrecioCalculator.etiqueta(p.nombre, p.precio, p.ofertaCantidad, p.ofertaPrecio));
                         productoIds.add(p.id);
                     }
                 }
@@ -109,6 +111,8 @@ public class VentaFragment extends Fragment {
                     if (first != null)
                         tvStock.setText("Stock disponible: " + first.stock);
                 }
+                // Si el precio cambió en Firebase, el total en pantalla se actualiza solo.
+                calcularTotal();
             }
 
             @Override
@@ -141,50 +145,24 @@ public class VentaFragment extends Fragment {
         super.onDestroyView();
     }
 
+    /** Muestra el total con el precio y la oferta de Firebase del producto elegido (ver PrecioCalculator). */
     private void calcularTotal() {
-        int pos = spinnerProducto.getSelectedItemPosition();
-        if (pos < 0 || pos >= productoIds.size()) {
-            tvTotal.setText("Total: S/ 0.00");
-            return;
-        }
-
-        Producto p = productoMap.get(productoIds.get(pos));
+        Producto p = productoSeleccionado();
+        int cantidad = PrecioCalculator.parsearCantidad(etCantidad.getText().toString());
         if (p == null) {
-            tvTotal.setText("Total: S/ 0.00");
+            tvTotal.setText("Total: " + PrecioCalculator.formatear(0));
             return;
         }
+        double total = PrecioCalculator.total(p.precio, cantidad, p.ofertaCantidad, p.ofertaPrecio);
+        double sinOferta = PrecioCalculator.total(p.precio, cantidad);
+        tvTotal.setText("Total: " + PrecioCalculator.formatear(total) + (total < sinOferta ? " (con oferta)" : ""));
+    }
 
-        String tipo = p.nombre;
-        String cantidadStr = etCantidad.getText().toString();
-
-        if (cantidadStr.isEmpty()) {
-            tvTotal.setText("Total: S/ 0.00");
-            return;
-        }
-
-        int cantidad;
-        try {
-            cantidad = Integer.parseInt(cantidadStr);
-        } catch (NumberFormatException e) {
-            tvTotal.setText("Total: S/ 0.00");
-            return;
-        }
-
-        double total;
-
-        String nombreProducto = p.nombre.trim();
-
-        if (nombreProducto.contains("1/2")) {
-            total = cantidad * 25.0;
-        } else if (nombreProducto.contains("1/4")) {
-            total = cantidad * 15.0;
-        } else if (nombreProducto.contains("1 kg")) {
-            total = cantidad * 45.0;
-        } else {
-            total = p.precio * cantidad;
-        }
-
-        tvTotal.setText(String.format(Locale.US, "Total: S/ %.2f", total));
+    @Nullable
+    private Producto productoSeleccionado() {
+        int pos = spinnerProducto.getSelectedItemPosition();
+        if (pos < 0 || pos >= productoIds.size()) return null;
+        return productoMap.get(productoIds.get(pos));
     }
 
     private void registrarVenta() {
@@ -223,6 +201,15 @@ public class VentaFragment extends Fragment {
             return;
         }
 
+        if (!PrecioCalculator.precioValido(p.precio)) {
+            Toast.makeText(requireContext(), "\"" + p.nombre + "\" no tiene precio. Ponlo en Firebase: productos → precio",
+                    Toast.LENGTH_LONG).show();
+            return;
+        }
+
+        // Se recalcula aquí con el producto y la cantidad actuales; nunca se lee del TextView.
+        final double total = PrecioCalculator.total(p.precio, cantidad, p.ofertaCantidad, p.ofertaPrecio);
+
         String nombre = etNombre.getText().toString().trim();
         if (nombre.isEmpty()) nombre = "Cliente";
 
@@ -242,14 +229,12 @@ public class VentaFragment extends Fragment {
                 return;
             }
 
-            double total = Double.parseDouble(tvTotal.getText().toString().replace("Total: S/ ", ""));
             if (montoParcial > total) {
                 Toast.makeText(requireContext(), "El monto parcial no puede ser mayor al total", Toast.LENGTH_SHORT).show();
                 return;
             }
         }
 
-        double total = Double.parseDouble(tvTotal.getText().toString().replace("Total: S/ ", ""));
         String key = ventasRef.push().getKey();
         final String idVenta = (key != null) ? key : "v" + System.currentTimeMillis();
         String fecha = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(new Date());
@@ -282,7 +267,7 @@ public class VentaFragment extends Fragment {
 
                 ventasRef.child(idVenta).setValue(venta)
                         .addOnSuccessListener(aVoid -> {
-                            Toast.makeText(appCtx, "Venta registrada correctamente. Total S/ " + total, Toast.LENGTH_LONG).show();
+                            Toast.makeText(appCtx, "Venta registrada. Total " + PrecioCalculator.formatear(total), Toast.LENGTH_LONG).show();
                             if (getView() == null) return; // la pestaña ya se cerró
                             etCantidad.setText("");
                             etNombre.setText("");

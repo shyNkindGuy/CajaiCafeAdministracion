@@ -25,20 +25,24 @@ con `firebase deploy --only database`); cada nodo nuevo necesita su entrada ahí
 | Lotes | `LotesFragment` → `NuevoLoteActivity`, `LoteDetalleActivity` | Costeo por costal, stock por lote, cerrar lote |
 | Reportes | `DashboardFragment` | Totales de bolsas, total cobrado, PDF interno |
 
+Precios: el total de una venta se calcula solo en `PrecioCalculator` (con tests). Nada de precios
+escritos en el código: todo se configura en `productos/{id}` en Firebase. Regla del negocio: la bolsa
+de 1/2 kg vale S/25, pero cada kilo completo (2 bolsas) sale a S/45 → oferta `ofertaCantidad: 2,
+ofertaPrecio: 45`. La de 1/4 kg vale S/15 y no tiene oferta (4 cuartos = S/60). Con oferta,
+`precioUnitario × cantidad` puede ser mayor que `total`; el que vale es `total`.
+
 Convención: todo `addValueEventListener` guarda el listener en un campo y se quita en
 `onDestroyView` (fragments) u `onDestroy` (activities). En callbacks asíncronos no usar
 `requireContext()`: usar el contexto de la app capturado antes, y `getView() != null` antes de tocar vistas.
 
 ## Nodos de Firebase
-- `productos/{id}`: `nombre, precio, stock` (catálogo global)
+- `productos/{id}`: `nombre, precio, stock`, y opcional `ofertaCantidad, ofertaPrecio` (catálogo global)
 - `ventas/{id}`: `fecha, producto, cliente, precioUnitario, cantidad, estadoPago (pagado|parcial|pendiente), montoParcial, total, loteId`
 - `lotes/{id}`: costos (pergamino/pilado/tostado kg×precio, flete, electricidad kW×h×S//kWh, empaque), `totalGastos`, `stockBolsas12`, `stockBolsas14`, `estado (abierto|cerrado)`
 - `usuarios/{uid}`: `true` para cada cuenta autorizada (solo se edita desde la consola)
 - Pendiente de crear: `gastos/` (gastos que no son de un costal: empaque, alquiler, mantenimiento, etc.; ya tiene regla)
 
 ## Deuda conocida (no re-descubrir; ver `docs/PLAN.md` para el orden de trabajo)
-- `VentaFragment.calcularTotal()` usa precios **hardcodeados** (1/2 kg = 25, 1/4 kg = 15, 1 kg = 45) e ignora `Producto.precio`; además guarda `precioUnitario = p.precio`, así que `precioUnitario × cantidad ≠ total`.
-- Cambiar de producto en el spinner **no recalcula** el total; `registrarVenta()` lee el total parseando el texto del `TextView`.
 - `VentaFragment` **no asigna `loteId`** ni descuenta el stock del lote → el detalle de lote siempre muestra S/ 0 en ventas.
 - `DashboardFragment`: el campo "Lote" no filtra nada; el PDF escribe directo en Descargas públicas (falla con scoped storage en Android 10+); no es comprobante SUNAT.
 - El repo es **público** y `google-services.json` está commiteado: cualquiera puede crear una cuenta

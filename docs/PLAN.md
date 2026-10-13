@@ -19,7 +19,7 @@ Leyenda: `[ ]` pendiente · `[x]` hecha (se marca dentro del PR que la resuelve)
   `onDestroy`; no usar `requireContext()` dentro de callbacks que pueden llegar después de salir.
 
 ## Fase 1 — Ventas correctas
-- [ ] **1.1 Precio único de verdad.** Mover el cálculo a una clase pura `PrecioCalculator`
+- [x] **1.1 Precio único de verdad.** Mover el cálculo a una clase pura `PrecioCalculator`
   (con tests), usar `Producto.precio` de Firebase, borrar el hardcode, recalcular al cambiar de
   producto y guardar el total como `double` (no parseando el `TextView`).
 - [ ] **1.2 Venta ligada a lote.** Selector de lote abierto en la venta (sugerir el más antiguo

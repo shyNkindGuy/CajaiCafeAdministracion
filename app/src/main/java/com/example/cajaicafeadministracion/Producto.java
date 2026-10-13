@@ -6,6 +6,11 @@ public class Producto {
     public double precio;
     public long stock;
 
+    // Oferta por cantidad (opcional, se configura en Firebase): cada grupo de ofertaCantidad
+    // unidades cuesta ofertaPrecio. Ej. bolsa 1/2 kg: 2 x S/45 (el kilo). 0 = sin oferta.
+    public int ofertaCantidad;
+    public double ofertaPrecio;
+
     public Producto(){}
 
     public Producto(String id, String nombre, double precio, long stock) {
