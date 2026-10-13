@@ -99,7 +99,7 @@ public class VentaFragment extends Fragment {
                     if (p != null) {
                         if (p.id == null) p.id = ds.getKey();
                         productoMap.put(p.id, p);
-                        productoNombres.add(p.nombre + " (" + PrecioCalculator.formatear(p.precio) + ")");
+                        productoNombres.add(PrecioCalculator.etiqueta(p.nombre, p.precio, p.ofertaCantidad, p.ofertaPrecio));
                         productoIds.add(p.id);
                     }
                 }
@@ -145,12 +145,17 @@ public class VentaFragment extends Fragment {
         super.onDestroyView();
     }
 
-    /** Muestra el total con el precio de Firebase del producto elegido (ver PrecioCalculator). */
+    /** Muestra el total con el precio y la oferta de Firebase del producto elegido (ver PrecioCalculator). */
     private void calcularTotal() {
         Producto p = productoSeleccionado();
         int cantidad = PrecioCalculator.parsearCantidad(etCantidad.getText().toString());
-        double total = (p == null) ? 0 : PrecioCalculator.total(p.precio, cantidad);
-        tvTotal.setText("Total: " + PrecioCalculator.formatear(total));
+        if (p == null) {
+            tvTotal.setText("Total: " + PrecioCalculator.formatear(0));
+            return;
+        }
+        double total = PrecioCalculator.total(p.precio, cantidad, p.ofertaCantidad, p.ofertaPrecio);
+        double sinOferta = PrecioCalculator.total(p.precio, cantidad);
+        tvTotal.setText("Total: " + PrecioCalculator.formatear(total) + (total < sinOferta ? " (con oferta)" : ""));
     }
 
     @Nullable
@@ -203,7 +208,7 @@ public class VentaFragment extends Fragment {
         }
 
         // Se recalcula aquí con el producto y la cantidad actuales; nunca se lee del TextView.
-        final double total = PrecioCalculator.total(p.precio, cantidad);
+        final double total = PrecioCalculator.total(p.precio, cantidad, p.ofertaCantidad, p.ofertaPrecio);
 
         String nombre = etNombre.getText().toString().trim();
         if (nombre.isEmpty()) nombre = "Cliente";
