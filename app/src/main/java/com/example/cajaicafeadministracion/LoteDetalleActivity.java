@@ -30,6 +30,8 @@ public class LoteDetalleActivity extends AppCompatActivity {
 
     DatabaseReference loteRef;
     DatabaseReference ventasRef;
+    Query ventasDelLote;
+    ValueEventListener loteListener, ventasListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,8 +73,16 @@ public class LoteDetalleActivity extends AppCompatActivity {
         btnCerrarLote.setOnClickListener(v -> confirmarCierre());
     }
 
+    @Override
+    protected void onDestroy() {
+        // Si el lote no era válido, onCreate termina antes de registrar los listeners.
+        if (loteListener != null) loteRef.removeEventListener(loteListener);
+        if (ventasListener != null) ventasDelLote.removeEventListener(ventasListener);
+        super.onDestroy();
+    }
+
     private void cargarLote() {
-        loteRef.addValueEventListener(new ValueEventListener() {
+        loteListener = loteRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 Lote l = snapshot.getValue(Lote.class);
@@ -116,7 +126,8 @@ public class LoteDetalleActivity extends AppCompatActivity {
     private void cargarVentasDelLote() {
         // Requiere loteId dentro de cada venta (se agrega cuando se conecte VentaFragment).
         // Mientras tanto, esta consulta simplemente no encontrará nada y mostrará S/0.00 — no falla.
-        ventasRef.orderByChild("loteId").equalTo(loteId).addValueEventListener(new ValueEventListener() {
+        ventasDelLote = ventasRef.orderByChild("loteId").equalTo(loteId);
+        ventasListener = ventasDelLote.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 ventaBrutaAcumulada = 0;

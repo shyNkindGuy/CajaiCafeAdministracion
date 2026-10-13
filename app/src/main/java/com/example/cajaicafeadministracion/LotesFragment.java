@@ -23,6 +23,7 @@ public class LotesFragment extends Fragment {
     private DatabaseReference lotesRef;
     private final List<Lote> listaLotes = new ArrayList<>();
     private LoteAdapter adapter;
+    private ValueEventListener lotesListener;
 
     @Nullable
     @Override
@@ -45,8 +46,14 @@ public class LotesFragment extends Fragment {
         return view;
     }
 
+    @Override
+    public void onDestroyView() {
+        if (lotesListener != null) lotesRef.removeEventListener(lotesListener);
+        super.onDestroyView();
+    }
+
     private void cargarLotes() {
-        lotesRef.addValueEventListener(new ValueEventListener() {
+        lotesListener = lotesRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 listaLotes.clear();

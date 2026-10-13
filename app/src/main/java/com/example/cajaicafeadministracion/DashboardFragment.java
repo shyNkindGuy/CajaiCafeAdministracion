@@ -30,6 +30,7 @@ public class DashboardFragment extends Fragment {
     EditText etLote, etRuc;
     Button btnExportar;
     DatabaseReference ventasRef;
+    ValueEventListener ventasListener;
     List<Venta> listaVentas = new ArrayList<>();
 
     @Nullable
@@ -72,8 +73,14 @@ public class DashboardFragment extends Fragment {
                 .show();
     }
 
+    @Override
+    public void onDestroyView() {
+        if (ventasListener != null) ventasRef.removeEventListener(ventasListener);
+        super.onDestroyView();
+    }
+
     private void cargarDatos() {
-        ventasRef.addValueEventListener(new ValueEventListener() {
+        ventasListener = ventasRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 listaVentas.clear();
