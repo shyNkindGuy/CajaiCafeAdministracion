@@ -1,5 +1,6 @@
 package com.example.cajaicafeadministracion;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -26,6 +27,7 @@ public class VentaFragment extends Fragment {
     List<String> productoNombres = new ArrayList<>();
     List<String> productoIds = new ArrayList<>();
     ArrayAdapter<String> productoAdapter;
+    ValueEventListener productosListener;
 
     @Nullable
     @Override
@@ -83,7 +85,7 @@ public class VentaFragment extends Fragment {
             public void onNothingSelected(AdapterView<?> parent) {}
         });
 
-        productosRef.addValueEventListener(new ValueEventListener() {
+        productosListener = productosRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 productoMap.clear();
@@ -130,6 +132,13 @@ public class VentaFragment extends Fragment {
         btnRegistrar.setOnClickListener(v -> registrarVenta());
 
         return view;
+    }
+
+    @Override
+    public void onDestroyView() {
+        // Cada cambio de pestaña crea un fragment nuevo: sin esto los listeners se acumulan.
+        if (productosListener != null) productosRef.removeEventListener(productosListener);
+        super.onDestroyView();
     }
 
     private void calcularTotal() {
@@ -249,6 +258,9 @@ public class VentaFragment extends Fragment {
 
         DatabaseReference stockRef = productosRef.child(pid).child("stock");
         int finalCantidad = cantidad;
+        // Las respuestas de Firebase pueden llegar después de cambiar de pestaña: requireContext()
+        // lanzaría una excepción. El contexto de la app sigue vivo y el aviso se ve igual.
+        final Context appCtx = requireContext().getApplicationContext();
 
         stockRef.runTransaction(new Transaction.Handler() {
             @NonNull
@@ -264,20 +276,21 @@ public class VentaFragment extends Fragment {
             @Override
             public void onComplete(@Nullable DatabaseError error, boolean committed, @Nullable DataSnapshot currentData) {
                 if (error != null || !committed) {
-                    Toast.makeText(requireContext(), "Error actualizando stock", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(appCtx, "Error actualizando stock", Toast.LENGTH_SHORT).show();
                     return;
                 }
 
                 ventasRef.child(idVenta).setValue(venta)
                         .addOnSuccessListener(aVoid -> {
-                            Toast.makeText(requireContext(), "Venta registrada correctamente. Total S/ " + total, Toast.LENGTH_LONG).show();
+                            Toast.makeText(appCtx, "Venta registrada correctamente. Total S/ " + total, Toast.LENGTH_LONG).show();
+                            if (getView() == null) return; // la pestaña ya se cerró
                             etCantidad.setText("");
                             etNombre.setText("");
                             etMontoParcial.setText("");
                             tvTotal.setText("Total: S/ 0.00");
                         })
                         .addOnFailureListener(e ->
-                                Toast.makeText(requireContext(), "Error guardando venta: " + e.getMessage(), Toast.LENGTH_SHORT).show()
+                                Toast.makeText(appCtx, "Error guardando venta: " + e.getMessage(), Toast.LENGTH_SHORT).show()
                         );
             }
         });

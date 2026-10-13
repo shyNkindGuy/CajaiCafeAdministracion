@@ -15,7 +15,7 @@ Leyenda: `[ ]` pendiente · `[x]` hecha (se marca dentro del PR que la resuelve)
 - [x] **0.2 Limpieza.** Borrar `VentaActivity.java` (el layout `activity_venta.xml` sí lo usa
   `VentaFragment`: no borrarlo), quitar `.HistorialFragment` del manifest, sacar `app/debug/app-debug.aab` del repo y agregar
   `*.aab`/`*.apk` al `.gitignore`.
-- [ ] **0.3 Listeners y ciclo de vida.** Quitar cada `ValueEventListener` en `onDestroyView`/
+- [x] **0.3 Listeners y ciclo de vida.** Quitar cada `ValueEventListener` en `onDestroyView`/
   `onDestroy`; no usar `requireContext()` dentro de callbacks que pueden llegar después de salir.
 
 ## Fase 1 — Ventas correctas

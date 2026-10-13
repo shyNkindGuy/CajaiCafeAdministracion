@@ -18,6 +18,7 @@ public class HistorialFragment extends Fragment {
     private DatabaseReference ventasRef;
     private List<Venta> listaVentas = new ArrayList<>();
     private VentaAdapter adapter;
+    private ValueEventListener ventasListener;
 
     @Nullable
     @Override
@@ -39,8 +40,14 @@ public class HistorialFragment extends Fragment {
         return view;
     }
 
+    @Override
+    public void onDestroyView() {
+        if (ventasListener != null) ventasRef.removeEventListener(ventasListener);
+        super.onDestroyView();
+    }
+
     private void cargarVentas() {
-        ventasRef.addValueEventListener(new ValueEventListener() {
+        ventasListener = ventasRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 listaVentas.clear();
