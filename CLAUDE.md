@@ -31,6 +31,11 @@ de 1/2 kg vale S/25, pero cada kilo completo (2 bolsas) sale a S/45 → oferta `
 ofertaPrecio: 45`. La de 1/4 kg vale S/15 y no tiene oferta (4 cuartos = S/60). Con oferta,
 `precioUnitario × cantidad` puede ser mayor que `total`; el que vale es `total`.
 
+Stock: las bolsas de 1/2 y 1/4 kg salen del lote (`lotes/{id}/stockBolsas12|14`, se suman con
+"Registrar empacado" en el detalle del lote); 1 kg y grano siguen usando `productos/{id}/stock`. El
+mapeo es por id de producto (`medio_kilo`, `cuarto_kilo`) en `StockLote` (con tests). La venta sugiere
+el lote abierto más antiguo con bolsas (FIFO), respeta el que se elija a mano y guarda su `loteId`.
+
 Convención: todo `addValueEventListener` guarda el listener en un campo y se quita en
 `onDestroyView` (fragments) u `onDestroy` (activities). En callbacks asíncronos no usar
 `requireContext()`: usar el contexto de la app capturado antes, y `getView() != null` antes de tocar vistas.
@@ -43,7 +48,7 @@ Convención: todo `addValueEventListener` guarda el listener en un campo y se qu
 - Pendiente de crear: `gastos/` (gastos que no son de un costal: empaque, alquiler, mantenimiento, etc.; ya tiene regla)
 
 ## Deuda conocida (no re-descubrir; ver `docs/PLAN.md` para el orden de trabajo)
-- `VentaFragment` **no asigna `loteId`** ni descuenta el stock del lote → el detalle de lote siempre muestra S/ 0 en ventas.
+- Borrar una venta no devuelve el stock al lote ni al producto (tarea 1.3). Las ventas anteriores a 1.2 no tienen `loteId`.
 - `DashboardFragment`: el campo "Lote" no filtra nada; el PDF escribe directo en Descargas públicas (falla con scoped storage en Android 10+); no es comprobante SUNAT.
 - El repo es **público** y `google-services.json` está commiteado: cualquiera puede crear una cuenta
   de Firebase Auth con esa API key. Por eso las reglas piden estar en `usuarios/`, no solo `auth != null`.

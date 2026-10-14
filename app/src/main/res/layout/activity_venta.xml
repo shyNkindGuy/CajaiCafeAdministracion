@@ -57,6 +57,18 @@
                     android:layout_marginTop="8dp"
                     android:textSize="16dp"
                     android:textColor="#040404"
+                    android:text="Lote (costal)" />
+                <Spinner
+                    android:id="@+id/spinnerLote"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:minHeight="55dp" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:textSize="16dp"
+                    android:textColor="#040404"
                     android:text="Cantidad" />
                 <EditText
                     android:id="@+id/etCantidad"
