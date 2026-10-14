@@ -362,6 +362,7 @@ public class VentaFragment extends Fragment {
 
         // loteId también en 1 kg y grano: así el detalle del lote cuenta todo lo que se vendió de ese costal.
         Venta venta = new Venta(idVenta, fecha, p.nombre, nombre, p.precio, cantidad, estadoPago, montoParcial, total, loteId);
+        venta.productoId = pid; // para devolver el stock al producto correcto si se borra la venta
 
         int finalCantidad = cantidad;
         // Las respuestas de Firebase pueden llegar después de cambiar de pestaña: requireContext()

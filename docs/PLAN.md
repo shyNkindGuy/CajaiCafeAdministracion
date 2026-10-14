@@ -25,7 +25,7 @@ Leyenda: `[ ]` pendiente · `[x]` hecha (se marca dentro del PR que la resuelve)
 - [x] **1.2 Venta ligada a lote.** Selector de lote abierto en la venta (sugerir el más antiguo
   con stock — FIFO), guardar `loteId` y descontar `stockBolsas12/14` del lote con
   `runTransaction`. Con esto `LoteDetalleActivity` empieza a mostrar ventas reales.
-- [ ] **1.3 Borrar venta devuelve stock.** Transacción inversa sobre producto y lote.
+- [x] **1.3 Borrar venta devuelve stock.** Transacción inversa sobre producto y lote.
 
 ## Fase 2 — Finanzas: ¿gano o pierdo?
 - [ ] **2.1 Costo unitario por lote.** Clase pura `CosteoLote` (con tests):

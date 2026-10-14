@@ -12,9 +12,10 @@ public class Venta {
     public String cliente;
     public String producto;
 
-    // NUEVO: a qué lote pertenece esta venta. Todavía no se llena desde VentaFragment
-    // (eso es el siguiente paso) — hasta entonces queda null y el resumen del lote mostrará S/0.
+    // Lote elegido al vender (null en ventas anteriores a la tarea 1.2).
     public String loteId;
+    // Id en productos/ (null en ventas anteriores a la tarea 1.3: ahí solo está el nombre en "producto").
+    public String productoId;
 
     public Venta() {}
     public Venta(String id, String tipo, int i, double v, String pagado, String fecha){}

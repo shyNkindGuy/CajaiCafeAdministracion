@@ -3,6 +3,7 @@ package com.example.cajaicafeadministracion;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Qué stock de lote descuenta cada producto y qué lote sugerir al vender (FIFO: primero el
@@ -77,6 +78,31 @@ public final class StockLote {
             }
         }
         return sugerido(abiertos, campo);
+    }
+
+    /**
+     * Id del producto de una venta: el que guarda la venta o, en ventas que no lo guardan (anteriores
+     * a la tarea 1.3), el del producto del catálogo con ese nombre. null si no se encuentra.
+     */
+    public static String productoIdDeVenta(String productoId, String nombre, Map<String, String> nombrePorId) {
+        if (productoId != null) return productoId;
+        if (nombre == null) return null;
+        for (Map.Entry<String, String> e : nombrePorId.entrySet()) {
+            if (nombre.equals(e.getValue())) return e.getKey();
+        }
+        return null;
+    }
+
+    /**
+     * Ruta (desde la raíz) del stock al que vuelven las bolsas de una venta borrada: el mismo de donde
+     * salieron. 1/2 y 1/4 kg vendidos con lote → {@code lotes/{loteId}/stockBolsas12|14}; 1 kg, grano y
+     * ventas anteriores a los lotes → {@code productos/{id}/stock}. null si no se sabe el producto.
+     */
+    public static String rutaDevolucion(String productoId, String loteId) {
+        if (productoId == null) return null;
+        String campo = campoStock(productoId);
+        if (campo != null && loteId != null) return "lotes/" + loteId + "/" + campo;
+        return "productos/" + productoId + "/stock";
     }
 
     /** Texto del selector de lotes, ej. "LOTE1-NOV2025 · 1/2 kg: 6 · 1/4 kg: 2". */

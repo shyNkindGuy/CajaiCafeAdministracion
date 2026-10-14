@@ -53,7 +53,10 @@ public class HistorialFragment extends Fragment {
                 listaVentas.clear();
                 for (DataSnapshot ds : snapshot.getChildren()) {
                     Venta venta = ds.getValue(Venta.class);
-                    if (venta != null) listaVentas.add(venta);
+                    if (venta != null) {
+                        if (venta.id == null) venta.id = ds.getKey(); // borrar usa el id
+                        listaVentas.add(venta);
+                    }
                 }
                 Collections.reverse(listaVentas);
                 adapter.notifyDataSetChanged();
