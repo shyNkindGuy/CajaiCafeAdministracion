@@ -23,7 +23,7 @@ con `firebase deploy --only database`); cada nodo nuevo necesita su entrada ahí
 | Venta | `VentaFragment` | Registra una venta y descuenta el stock (del lote o del producto, ver Stock) con `runTransaction` |
 | Historial | `HistorialFragment` + `VentaAdapter` | Lista ventas, editar estado de pago, borrar (devuelve el stock) |
 | Lotes | `LotesFragment` → `NuevoLoteActivity`, `LoteDetalleActivity` | Costeo por costal y costo unitario (`CosteoLote`, con tests), stock por lote, cerrar lote |
-| Reportes | `DashboardFragment` | Totales de bolsas, total cobrado, PDF interno |
+| Reportes | `DashboardFragment` → `GastoActivity` | Totales de bolsas, total cobrado, PDF interno; "Registrar gasto" (categorías fijas y validación en `ValidacionGasto`, con tests) |
 
 Precios: el total de una venta se calcula solo en `PrecioCalculator` (con tests). Nada de precios
 escritos en el código: todo se configura en `productos/{id}` en Firebase. Regla del negocio: la bolsa
@@ -52,7 +52,7 @@ Convención: todo `addValueEventListener` guarda el listener en un campo y se qu
 - `ventas/{id}`: `fecha, producto, cliente, precioUnitario, cantidad, estadoPago (pagado|parcial|pendiente), montoParcial, total, loteId, productoId`
 - `lotes/{id}`: costos (pergamino/pilado/tostado kg×precio, flete, electricidad kW×h×S//kWh, empaque), `totalGastos`, `stockBolsas12`, `stockBolsas14`, `estado (abierto|cerrado)`
 - `usuarios/{uid}`: `true` para cada cuenta autorizada (solo se edita desde la consola)
-- Pendiente de crear: `gastos/` (gastos que no son de un costal: empaque, alquiler, mantenimiento, etc.; ya tiene regla)
+- `gastos/{id}`: `fecha, categoria (empaque|transporte|publicidad|servicios|mantenimiento|otros), monto, nota, loteId (opcional), uid` — gastos que no son del costeo de un costal. Las reglas exigen `monto > 0` y `uid` = quien escribe; índice en `fecha` y `loteId`
 
 ## Deuda conocida (no re-descubrir; ver `docs/PLAN.md` para el orden de trabajo)
 - Las ventas anteriores a 1.2 no tienen `loteId` y las anteriores a 1.3 no tienen `productoId` (al borrarlas se busca el producto por nombre).

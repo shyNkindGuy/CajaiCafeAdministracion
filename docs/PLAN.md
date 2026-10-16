@@ -31,7 +31,7 @@ Leyenda: `[ ]` pendiente · `[x]` hecha (se marca dentro del PR que la resuelve)
 - [x] **2.1 Costo unitario por lote.** Clase pura `CosteoLote` (con tests):
   costo café por kg tostado = (pergamino + pilado + tostado + flete + electricidad) / kg tostado;
   costo por bolsa = costo kg × peso + bolsa + sticker. Mostrarlo en el detalle del lote.
-- [ ] **2.2 Gastos generales.** Nodo `gastos/{id}` (fecha, categoría, monto, nota, loteId
+- [x] **2.2 Gastos generales.** Nodo `gastos/{id}` (fecha, categoría, monto, nota, loteId
   opcional, uid) + pantalla "Registrar gasto" con categorías fijas (empaque, transporte,
   publicidad, servicios, mantenimiento, otros).
 - [ ] **2.3 Pestaña Inicio (resumen del mes).** Clase pura `ResumenFinanciero` (con tests):

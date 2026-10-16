@@ -23,7 +23,11 @@
     },
     "gastos": {
       ".read": "auth != null && root.child('usuarios').child(auth.uid).val() === true",
-      ".write": "auth != null && root.child('usuarios').child(auth.uid).val() === true"
+      ".write": "auth != null && root.child('usuarios').child(auth.uid).val() === true",
+      ".indexOn": ["fecha", "loteId"],
+      "$id": {
+        ".validate": "newData.hasChildren(['fecha', 'categoria', 'monto', 'uid']) && newData.child('monto').isNumber() && newData.child('monto').val() > 0 && newData.child('uid').val() === auth.uid"
+      }
     }
   }
 }
