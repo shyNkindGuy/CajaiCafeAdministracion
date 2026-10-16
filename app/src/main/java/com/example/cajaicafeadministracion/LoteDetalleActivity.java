@@ -24,14 +24,19 @@ public class LoteDetalleActivity extends AppCompatActivity {
     TextView tvCodigo, tvEstado, tvFecha;
     TextView tvCostoPergamino, tvCostoPilado, tvCostoTostado, tvCostoFlete,
             tvCostoElectricidad, tvCostoEmpaque, tvTotalGastos;
+    TextView tvCostoKg, tvCostoBolsa12, tvCostoBolsa14;
     TextView tvVentaBruta, tvCobrado, tvGananciaParcial;
     TextView tvStock12, tvStock14;
     Button btnEmpacar, btnCerrarLote;
 
     DatabaseReference loteRef;
     DatabaseReference ventasRef;
+    DatabaseReference productosRef;
     Query ventasDelLote;
-    ValueEventListener loteListener, ventasListener;
+    ValueEventListener loteListener, ventasListener, productosListener;
+
+    // Costo de bolsa y sticker por unidad (productos/{id}); null hasta que carguen.
+    Producto medioKilo, cuartoKilo;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,6 +60,9 @@ public class LoteDetalleActivity extends AppCompatActivity {
         tvCostoElectricidad = findViewById(R.id.tvDetElectricidad);
         tvCostoEmpaque = findViewById(R.id.tvDetEmpaque);
         tvTotalGastos = findViewById(R.id.tvDetTotalGastos);
+        tvCostoKg = findViewById(R.id.tvDetCostoKg);
+        tvCostoBolsa12 = findViewById(R.id.tvDetCostoBolsa12);
+        tvCostoBolsa14 = findViewById(R.id.tvDetCostoBolsa14);
         tvVentaBruta = findViewById(R.id.tvDetVentaBruta);
         tvCobrado = findViewById(R.id.tvDetCobrado);
         tvGananciaParcial = findViewById(R.id.tvDetGanancia);
@@ -65,9 +73,11 @@ public class LoteDetalleActivity extends AppCompatActivity {
 
         loteRef = FirebaseDatabase.getInstance().getReference("lotes").child(loteId);
         ventasRef = FirebaseDatabase.getInstance().getReference("ventas");
+        productosRef = FirebaseDatabase.getInstance().getReference("productos");
 
         cargarLote();
         cargarVentasDelLote();
+        cargarCostosEmpaque();
 
         btnEmpacar.setOnClickListener(v -> mostrarDialogoEmpacado());
         btnCerrarLote.setOnClickListener(v -> confirmarCierre());
@@ -78,6 +88,7 @@ public class LoteDetalleActivity extends AppCompatActivity {
         // Si el lote no era válido, onCreate termina antes de registrar los listeners.
         if (loteListener != null) loteRef.removeEventListener(loteListener);
         if (ventasListener != null) ventasDelLote.removeEventListener(ventasListener);
+        if (productosListener != null) productosRef.removeEventListener(productosListener);
         super.onDestroy();
     }
 
@@ -117,7 +128,43 @@ public class LoteDetalleActivity extends AppCompatActivity {
 
         btnCerrarLote.setVisibility("cerrado".equals(l.estado) ? View.GONE : View.VISIBLE);
 
+        pintarCosteo();
         recalcularGanancia();
+    }
+
+    private void cargarCostosEmpaque() {
+        productosListener = productosRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                medioKilo = snapshot.child("medio_kilo").getValue(Producto.class);
+                cuartoKilo = snapshot.child("cuarto_kilo").getValue(Producto.class);
+                pintarCosteo();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Toast.makeText(LoteDetalleActivity.this, "Error cargando productos: " + error.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void pintarCosteo() {
+        if (loteActual == null) return;
+        if (CosteoLote.calculable(loteActual)) {
+            tvCostoKg.setText(String.format(Locale.US, "Café por kg tostado: %s (%s / %.2f kg)",
+                    PrecioCalculator.formatear(CosteoLote.costoPorKg(loteActual)),
+                    PrecioCalculator.formatear(CosteoLote.costoCafe(loteActual)), loteActual.tostadoKg));
+        } else {
+            tvCostoKg.setText("Café por kg tostado: falta el kg tostado del lote");
+        }
+        tvCostoBolsa12.setText(detalleBolsa("Bolsa 1/2 kg", "medio_kilo", medioKilo));
+        tvCostoBolsa14.setText(detalleBolsa("Bolsa 1/4 kg", "cuarto_kilo", cuartoKilo));
+    }
+
+    private String detalleBolsa(String nombre, String productoId, @Nullable Producto p) {
+        double bolsa = p != null ? p.costoBolsa : 0;
+        double sticker = p != null ? p.costoSticker : 0;
+        return CosteoLote.detalleBolsa(nombre, loteActual, productoId, bolsa, sticker);
     }
 
     private double ventaBrutaAcumulada = 0;

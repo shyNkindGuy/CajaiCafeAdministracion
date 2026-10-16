@@ -11,6 +11,11 @@ public class Producto {
     public int ofertaCantidad;
     public double ofertaPrecio;
 
+    // Costo de empaque por unidad (opcional, se configura en Firebase) para el costo por bolsa del
+    // lote (CosteoLote). Solo lo usan las bolsas que salen de un lote: 1/2 kg y 1/4 kg.
+    public double costoBolsa;
+    public double costoSticker;
+
     public Producto(){}
 
     public Producto(String id, String nombre, double precio, long stock) {
