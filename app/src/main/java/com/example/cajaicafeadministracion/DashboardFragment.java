@@ -50,6 +50,8 @@ public class DashboardFragment extends Fragment {
         cargarDatos();
 
         btnExportar.setOnClickListener(v -> generarPDF());
+        view.findViewById(R.id.btnRegistrarGasto).setOnClickListener(v ->
+                startActivity(new Intent(requireContext(), GastoActivity.class)));
 
         TextView tvSesion = view.findViewById(R.id.tvSesion);
         FirebaseUser usuario = FirebaseAuth.getInstance().getCurrentUser();

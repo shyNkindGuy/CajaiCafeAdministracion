@@ -101,6 +101,15 @@
         </LinearLayout>
         </androidx.cardview.widget.CardView>
 
+        <Button
+            android:id="@+id/btnRegistrarGasto"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:backgroundTint="@color/cafeMedio"
+            android:textColor="#FFFFFF"
+            android:text="Registrar gasto" />
+
         <TextView
             android:text="Generar Reporte"
             android:layout_marginTop="30dp"
