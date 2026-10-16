@@ -20,6 +20,7 @@ con `firebase deploy --only database`); cada nodo nuevo necesita su entrada ahí
 ## Pantallas (bottom nav en `MainActivity`)
 | Tab | Clase | Qué hace |
 |---|---|---|
+| Inicio (se abre al entrar) | `InicioFragment` | Resumen del mes elegido (`ResumenFinanciero`, con tests) y punto de equilibrio de cada lote abierto |
 | Venta | `VentaFragment` | Registra una venta y descuenta el stock (del lote o del producto, ver Stock) con `runTransaction` |
 | Historial | `HistorialFragment` + `VentaAdapter` | Lista ventas, editar estado de pago, borrar (devuelve el stock) |
 | Lotes | `LotesFragment` → `NuevoLoteActivity`, `LoteDetalleActivity` | Costeo por costal y costo unitario (`CosteoLote`, con tests), stock por lote, cerrar lote |
@@ -35,6 +36,14 @@ Costo unitario (`CosteoLote`): costo por kg tostado = (pergamino + pilado + tost
 electricidad) / `tostadoKg` (kg que salen del tueste); costo por bolsa = costo kg × peso (0.5 o
 0.25 kg) + `costoBolsa` + `costoSticker` del producto. El `empaqueTotal` manual del lote no entra en
 el costo unitario (sí en `totalGastos`).
+
+Resumen del mes (`ResumenFinanciero`, por prefijo `yyyy-MM` de `fecha`): ingresos = Σ `total`;
+cobrado = pagado → total, parcial → `montoParcial`; costo de lo vendido = solo el **café** de cada
+bolsa (`CosteoLote.costoCafePorBolsa` × cantidad; 1 kg, grano y ventas sin lote quedan "sin costo");
+gastos = todo `gastos/` del mes (el empaque entra ahí al comprarse, por eso no va en el costo de lo
+vendido); utilidad neta = ingresos − costo − gastos. Punto de equilibrio de un lote: invertido =
+`totalGastos` + gastos con su `loteId`, contra todas sus ventas; las bolsas que faltan se cuentan a
+precio efectivo de 1/2 kg con oferta (S/22.50).
 
 Stock: las bolsas de 1/2 y 1/4 kg salen del lote (`lotes/{id}/stockBolsas12|14`, se suman con
 "Registrar empacado" en el detalle del lote); 1 kg y grano siguen usando `productos/{id}/stock`. El

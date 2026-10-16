@@ -30,7 +30,9 @@ public class MainActivity extends AppCompatActivity {
             Fragment selectedFragment = null;
 
             int itemId = item.getItemId();
-            if (itemId == R.id.nav_venta) {
+            if (itemId == R.id.nav_inicio) {
+                selectedFragment = new InicioFragment();
+            } else if (itemId == R.id.nav_venta) {
                 selectedFragment = new VentaFragment();
             } else if (itemId == R.id.nav_historial) {
                 selectedFragment = new HistorialFragment();
@@ -49,9 +51,10 @@ public class MainActivity extends AppCompatActivity {
             return false;
         });
 
+        // Inicio (resumen del mes) es la primera pestaña y la que se abre al entrar.
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.fragment_container, new VentaFragment())
+                    .replace(R.id.fragment_container, new InicioFragment())
                     .commit();
         }
     }
