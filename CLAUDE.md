@@ -20,8 +20,8 @@ con `firebase deploy --only database`); cada nodo nuevo necesita su entrada ahí
 ## Pantallas (bottom nav en `MainActivity`)
 | Tab | Clase | Qué hace |
 |---|---|---|
-| Venta | `VentaFragment` | Registra una venta y descuenta `productos/{id}/stock` con `runTransaction` |
-| Historial | `HistorialFragment` + `VentaAdapter` | Lista ventas, editar estado de pago, borrar |
+| Venta | `VentaFragment` | Registra una venta y descuenta el stock (del lote o del producto, ver Stock) con `runTransaction` |
+| Historial | `HistorialFragment` + `VentaAdapter` | Lista ventas, editar estado de pago, borrar (devuelve el stock) |
 | Lotes | `LotesFragment` → `NuevoLoteActivity`, `LoteDetalleActivity` | Costeo por costal, stock por lote, cerrar lote |
 | Reportes | `DashboardFragment` | Totales de bolsas, total cobrado, PDF interno |
 
@@ -35,6 +35,8 @@ Stock: las bolsas de 1/2 y 1/4 kg salen del lote (`lotes/{id}/stockBolsas12|14`,
 "Registrar empacado" en el detalle del lote); 1 kg y grano siguen usando `productos/{id}/stock`. El
 mapeo es por id de producto (`medio_kilo`, `cuarto_kilo`) en `StockLote` (con tests). La venta sugiere
 el lote abierto más antiguo con bolsas (FIFO), respeta el que se elija a mano y guarda su `loteId`.
+Borrar una venta devuelve las bolsas a donde salieron (`StockLote.rutaDevolucion`) en una sola
+escritura atómica (`updateChildren` con `ServerValue.increment`).
 
 Convención: todo `addValueEventListener` guarda el listener en un campo y se quita en
 `onDestroyView` (fragments) u `onDestroy` (activities). En callbacks asíncronos no usar
@@ -42,13 +44,13 @@ Convención: todo `addValueEventListener` guarda el listener en un campo y se qu
 
 ## Nodos de Firebase
 - `productos/{id}`: `nombre, precio, stock`, y opcional `ofertaCantidad, ofertaPrecio` (catálogo global)
-- `ventas/{id}`: `fecha, producto, cliente, precioUnitario, cantidad, estadoPago (pagado|parcial|pendiente), montoParcial, total, loteId`
+- `ventas/{id}`: `fecha, producto, cliente, precioUnitario, cantidad, estadoPago (pagado|parcial|pendiente), montoParcial, total, loteId, productoId`
 - `lotes/{id}`: costos (pergamino/pilado/tostado kg×precio, flete, electricidad kW×h×S//kWh, empaque), `totalGastos`, `stockBolsas12`, `stockBolsas14`, `estado (abierto|cerrado)`
 - `usuarios/{uid}`: `true` para cada cuenta autorizada (solo se edita desde la consola)
 - Pendiente de crear: `gastos/` (gastos que no son de un costal: empaque, alquiler, mantenimiento, etc.; ya tiene regla)
 
 ## Deuda conocida (no re-descubrir; ver `docs/PLAN.md` para el orden de trabajo)
-- Borrar una venta no devuelve el stock al lote ni al producto (tarea 1.3). Las ventas anteriores a 1.2 no tienen `loteId`.
+- Las ventas anteriores a 1.2 no tienen `loteId` y las anteriores a 1.3 no tienen `productoId` (al borrarlas se busca el producto por nombre).
 - `DashboardFragment`: el campo "Lote" no filtra nada; el PDF escribe directo en Descargas públicas (falla con scoped storage en Android 10+); no es comprobante SUNAT.
 - El repo es **público** y `google-services.json` está commiteado: cualquiera puede crear una cuenta
   de Firebase Auth con esa API key. Por eso las reglas piden estar en `usuarios/`, no solo `auth != null`.

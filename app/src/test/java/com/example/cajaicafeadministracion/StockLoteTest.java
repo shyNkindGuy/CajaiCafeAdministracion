@@ -4,7 +4,9 @@ import org.junit.Test;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
@@ -89,6 +91,30 @@ public class StockLoteTest {
         // El elegido ya no está entre los abiertos (se cerró).
         assertEquals(0, StockLote.elegido(fifo, StockLote.CAMPO_MEDIO_KILO, "l9"));
         assertEquals(-1, StockLote.elegido(Collections.emptyList(), StockLote.CAMPO_MEDIO_KILO, "l2"));
+    }
+
+    @Test
+    public void productoIdDeVenta_guardadoOPorNombre() {
+        Map<String, String> catalogo = new HashMap<>();
+        catalogo.put("medio_kilo", "Bolsa 1/2 kg");
+        catalogo.put("un_kilo", "Bolsa 1 kg");
+        // La venta ya guarda el id: se usa tal cual.
+        assertEquals("cuarto_kilo", StockLote.productoIdDeVenta("cuarto_kilo", "Bolsa 1/4 kg", catalogo));
+        // Venta antigua sin id: se busca por nombre.
+        assertEquals("medio_kilo", StockLote.productoIdDeVenta(null, "Bolsa 1/2 kg", catalogo));
+        assertNull(StockLote.productoIdDeVenta(null, "Producto borrado", catalogo));
+        assertNull(StockLote.productoIdDeVenta(null, null, catalogo));
+    }
+
+    @Test
+    public void rutaDevolucion_vuelveDeDondeSalio() {
+        assertEquals("lotes/l1/stockBolsas12", StockLote.rutaDevolucion("medio_kilo", "l1"));
+        assertEquals("lotes/l1/stockBolsas14", StockLote.rutaDevolucion("cuarto_kilo", "l1"));
+        // 1 kg y grano descuentan del producto aunque la venta tenga lote.
+        assertEquals("productos/un_kilo/stock", StockLote.rutaDevolucion("un_kilo", "l1"));
+        // Ventas anteriores a los lotes salieron del producto.
+        assertEquals("productos/medio_kilo/stock", StockLote.rutaDevolucion("medio_kilo", null));
+        assertNull(StockLote.rutaDevolucion(null, "l1"));
     }
 
     @Test
