@@ -22,7 +22,7 @@ con `firebase deploy --only database`); cada nodo nuevo necesita su entrada ahí
 |---|---|---|
 | Venta | `VentaFragment` | Registra una venta y descuenta el stock (del lote o del producto, ver Stock) con `runTransaction` |
 | Historial | `HistorialFragment` + `VentaAdapter` | Lista ventas, editar estado de pago, borrar (devuelve el stock) |
-| Lotes | `LotesFragment` → `NuevoLoteActivity`, `LoteDetalleActivity` | Costeo por costal, stock por lote, cerrar lote |
+| Lotes | `LotesFragment` → `NuevoLoteActivity`, `LoteDetalleActivity` | Costeo por costal y costo unitario (`CosteoLote`, con tests), stock por lote, cerrar lote |
 | Reportes | `DashboardFragment` | Totales de bolsas, total cobrado, PDF interno |
 
 Precios: el total de una venta se calcula solo en `PrecioCalculator` (con tests). Nada de precios
@@ -30,6 +30,11 @@ escritos en el código: todo se configura en `productos/{id}` en Firebase. Regla
 de 1/2 kg vale S/25, pero cada kilo completo (2 bolsas) sale a S/45 → oferta `ofertaCantidad: 2,
 ofertaPrecio: 45`. La de 1/4 kg vale S/15 y no tiene oferta (4 cuartos = S/60). Con oferta,
 `precioUnitario × cantidad` puede ser mayor que `total`; el que vale es `total`.
+
+Costo unitario (`CosteoLote`): costo por kg tostado = (pergamino + pilado + tostado + flete +
+electricidad) / `tostadoKg` (kg que salen del tueste); costo por bolsa = costo kg × peso (0.5 o
+0.25 kg) + `costoBolsa` + `costoSticker` del producto. El `empaqueTotal` manual del lote no entra en
+el costo unitario (sí en `totalGastos`).
 
 Stock: las bolsas de 1/2 y 1/4 kg salen del lote (`lotes/{id}/stockBolsas12|14`, se suman con
 "Registrar empacado" en el detalle del lote); 1 kg y grano siguen usando `productos/{id}/stock`. El
@@ -43,7 +48,7 @@ Convención: todo `addValueEventListener` guarda el listener en un campo y se qu
 `requireContext()`: usar el contexto de la app capturado antes, y `getView() != null` antes de tocar vistas.
 
 ## Nodos de Firebase
-- `productos/{id}`: `nombre, precio, stock`, y opcional `ofertaCantidad, ofertaPrecio` (catálogo global)
+- `productos/{id}`: `nombre, precio, stock`, y opcional `ofertaCantidad, ofertaPrecio` y `costoBolsa, costoSticker` (empaque por unidad, para el costo por bolsa del lote) (catálogo global)
 - `ventas/{id}`: `fecha, producto, cliente, precioUnitario, cantidad, estadoPago (pagado|parcial|pendiente), montoParcial, total, loteId, productoId`
 - `lotes/{id}`: costos (pergamino/pilado/tostado kg×precio, flete, electricidad kW×h×S//kWh, empaque), `totalGastos`, `stockBolsas12`, `stockBolsas14`, `estado (abierto|cerrado)`
 - `usuarios/{uid}`: `true` para cada cuenta autorizada (solo se edita desde la consola)

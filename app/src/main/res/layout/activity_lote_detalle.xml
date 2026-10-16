@@ -34,6 +34,20 @@
             </LinearLayout>
         </androidx.cardview.widget.CardView>
 
+        <!-- Costo unitario -->
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:layout_marginBottom="12dp" android:backgroundTint="#EFEBE9"
+            card_view:cardCornerRadius="12dp" card_view:cardElevation="3dp">
+            <LinearLayout android:orientation="vertical" android:padding="16dp" android:layout_width="match_parent" android:layout_height="wrap_content">
+                <TextView android:text="Costo unitario" android:textStyle="bold" android:textSize="16sp" android:layout_marginBottom="6dp" android:layout_width="wrap_content" android:layout_height="wrap_content" />
+                <TextView android:id="@+id/tvDetCostoKg" android:text="" android:textStyle="bold" android:layout_width="wrap_content" android:layout_height="wrap_content" />
+                <TextView android:id="@+id/tvDetCostoBolsa12" android:text="" android:layout_marginTop="4dp" android:layout_width="wrap_content" android:layout_height="wrap_content" />
+                <TextView android:id="@+id/tvDetCostoBolsa14" android:text="" android:layout_width="wrap_content" android:layout_height="wrap_content" />
+                <TextView android:text="El costo por kg no incluye el empaque manual del lote: la bolsa y el sticker se suman por unidad." android:textSize="12sp" android:textColor="#757575" android:layout_marginTop="6dp" android:layout_width="wrap_content" android:layout_height="wrap_content" />
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+
         <!-- Ventas / ganancia -->
         <androidx.cardview.widget.CardView
             android:layout_width="match_parent" android:layout_height="wrap_content"
