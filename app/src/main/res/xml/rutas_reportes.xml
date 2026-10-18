@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Carpetas que FileProvider puede compartir: donde ArchivoPdf guarda los reportes antes de Android 10. -->
+<paths>
+    <external-files-path name="reportes" path="Download/" />
+    <files-path name="reportes_internos" path="reportes/" />
+</paths>

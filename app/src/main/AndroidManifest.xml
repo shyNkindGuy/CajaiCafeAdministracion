@@ -29,6 +29,17 @@
         <activity android:name=".LoteDetalleActivity"/>
         <activity android:name=".GastoActivity"/>
         <activity android:name=".CuentasPorCobrarActivity"/>
+
+        <!-- Comparte los PDF guardados en la carpeta de la app (Android 7 a 9; desde la 10 van por MediaStore). -->
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/rutas_reportes" />
+        </provider>
     </application>
 
 </manifest>

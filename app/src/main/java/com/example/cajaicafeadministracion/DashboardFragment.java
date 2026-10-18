@@ -1,13 +1,11 @@
 package com.example.cajaicafeadministracion;
 
 import android.app.AlertDialog;
+import android.content.ActivityNotFoundException;
 import android.content.Intent;
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Paint;
 import android.graphics.pdf.PdfDocument;
+import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,20 +16,32 @@ import androidx.fragment.app.Fragment;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.*;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 
 public class DashboardFragment extends Fragment {
 
     TextView tvTotalMedio, tvTotalCuarto, tvTotalDinero;
-    EditText etLote, etRuc;
+    RadioButton rbPorMes;
+    Spinner spinnerReporte;
     Button btnExportar;
-    DatabaseReference ventasRef;
-    ValueEventListener ventasListener;
+    DatabaseReference ventasRef, gastosRef, lotesRef, productosRef;
+    ValueEventListener ventasListener, gastosListener, lotesListener, productosListener;
     List<Venta> listaVentas = new ArrayList<>();
+
+    // Para el PDF por mes o por lote (Reporte).
+    final List<Gasto> gastos = new ArrayList<>();
+    final Map<String, Lote> lotes = new LinkedHashMap<>();
+    final Map<String, Producto> productos = new HashMap<>();
+    // Lo que muestra el selector: meses "yyyy-MM" o ids de lote, en el mismo orden.
+    final List<String> clavesReporte = new ArrayList<>();
+    boolean opcionesPorMes = true;
 
     @Nullable
     @Override
@@ -41,14 +51,20 @@ public class DashboardFragment extends Fragment {
         tvTotalMedio = view.findViewById(R.id.tvTotalMedioKilo);
         tvTotalCuarto = view.findViewById(R.id.tvTotalCuartoKilo);
         tvTotalDinero = view.findViewById(R.id.tvTotalDinero);
-        etLote = view.findViewById(R.id.etLote);
-        etRuc = view.findViewById(R.id.etRuc);
+        rbPorMes = view.findViewById(R.id.rbPorMes);
+        spinnerReporte = view.findViewById(R.id.spinnerReporte);
         btnExportar = view.findViewById(R.id.btnExportarPDF);
 
-        ventasRef = FirebaseDatabase.getInstance().getReference("ventas");
+        FirebaseDatabase db = FirebaseDatabase.getInstance();
+        ventasRef = db.getReference("ventas");
+        gastosRef = db.getReference("gastos");
+        lotesRef = db.getReference("lotes");
+        productosRef = db.getReference("productos");
 
         cargarDatos();
+        cargarDatosReporte();
 
+        ((RadioGroup) view.findViewById(R.id.rgTipoReporte)).setOnCheckedChangeListener((g, id) -> actualizarOpcionesReporte());
         btnExportar.setOnClickListener(v -> generarPDF());
         view.findViewById(R.id.btnRegistrarGasto).setOnClickListener(v ->
                 startActivity(new Intent(requireContext(), GastoActivity.class)));
@@ -78,6 +94,9 @@ public class DashboardFragment extends Fragment {
     @Override
     public void onDestroyView() {
         if (ventasListener != null) ventasRef.removeEventListener(ventasListener);
+        if (gastosListener != null) gastosRef.removeEventListener(gastosListener);
+        if (lotesListener != null) lotesRef.removeEventListener(lotesListener);
+        if (productosListener != null) productosRef.removeEventListener(productosListener);
         super.onDestroyView();
     }
 
@@ -121,84 +140,152 @@ public class DashboardFragment extends Fragment {
 
                 // Mostramos el total recaudado en la nueva tarjeta verde
                 tvTotalDinero.setText("S/ " + String.format("%.2f", totalDineroRecaudado));
+                actualizarOpcionesReporte();
             }
             @Override
             public void onCancelled(@NonNull DatabaseError error) {}
         });
     }
 
+    /** Gastos, lotes y productos: lo que el PDF necesita además de las ventas. */
+    private void cargarDatosReporte() {
+        gastosListener = gastosRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                gastos.clear();
+                for (DataSnapshot ds : snapshot.getChildren()) {
+                    Gasto g = ds.getValue(Gasto.class);
+                    if (g != null) gastos.add(g);
+                }
+                actualizarOpcionesReporte();
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {}
+        });
+        lotesListener = lotesRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                lotes.clear();
+                for (DataSnapshot ds : snapshot.getChildren()) {
+                    Lote l = ds.getValue(Lote.class);
+                    if (l == null) continue;
+                    l.id = ds.getKey();
+                    lotes.put(l.id, l);
+                }
+                actualizarOpcionesReporte();
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {}
+        });
+        productosListener = productosRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                productos.clear();
+                for (DataSnapshot ds : snapshot.getChildren()) {
+                    Producto p = ds.getValue(Producto.class);
+                    if (p == null) continue;
+                    p.id = ds.getKey();
+                    productos.put(p.id, p);
+                }
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {}
+        });
+    }
+
+    /** Opciones del selector según el tipo: meses con movimientos (más el actual) o lotes, el más reciente primero. */
+    private void actualizarOpcionesReporte() {
+        if (getView() == null) return;
+        String elegido = claveElegida();
+        boolean porMes = rbPorMes.isChecked();
+        List<String> claves = new ArrayList<>();
+        List<String> etiquetas = new ArrayList<>();
+        if (porMes) {
+            List<String> fechas = new ArrayList<>();
+            for (Venta v : listaVentas) fechas.add(v.fecha);
+            for (Gasto g : gastos) fechas.add(g.fecha);
+            for (String mes : ResumenFinanciero.meses(fechas, new SimpleDateFormat("yyyy-MM", Locale.US).format(new Date()))) {
+                claves.add(mes);
+                etiquetas.add(ResumenFinanciero.etiquetaMes(mes));
+            }
+        } else {
+            List<Lote> ordenados = new ArrayList<>(lotes.values());
+            ordenados.sort((a, b) -> texto(b.fechaInicio).compareTo(texto(a.fechaInicio)));
+            for (Lote l : ordenados) {
+                claves.add(l.id);
+                etiquetas.add(texto(l.codigo) + ("cerrado".equals(l.estado) ? " (cerrado)" : ""));
+            }
+            if (ordenados.isEmpty()) etiquetas.add("No hay lotes todavía");
+        }
+        if (porMes == opcionesPorMes && claves.equals(clavesReporte)) return; // nada cambió: no mover el selector
+        opcionesPorMes = porMes;
+        clavesReporte.clear();
+        clavesReporte.addAll(claves);
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(spinnerReporte.getContext(),
+                android.R.layout.simple_spinner_item, etiquetas);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinnerReporte.setAdapter(adapter);
+        spinnerReporte.setSelection(Math.max(clavesReporte.indexOf(elegido), 0));
+    }
+
+    @Nullable
+    private String claveElegida() {
+        int pos = spinnerReporte.getSelectedItemPosition();
+        return (pos >= 0 && pos < clavesReporte.size()) ? clavesReporte.get(pos) : null;
+    }
+
+    /** Arma el reporte elegido (Reporte), lo pinta (GeneradorPdf) y lo guarda sin pedir permisos (ArchivoPdf). */
     private void generarPDF() {
-        PdfDocument pdfDocument = new PdfDocument();
-        Paint paint = new Paint();
-        Paint titlePaint = new Paint();
-
-        // Página A4 estándar aprox en puntos (595 x 842)
-        PdfDocument.PageInfo myPageInfo = new PdfDocument.PageInfo.Builder(595, 842, 1).create();
-        PdfDocument.Page myPage = pdfDocument.startPage(myPageInfo);
-        Canvas canvas = myPage.getCanvas();
-
-        // Estilos
-        titlePaint.setTextAlign(Paint.Align.CENTER);
-        titlePaint.setTypeface(android.graphics.Typeface.create(android.graphics.Typeface.DEFAULT, android.graphics.Typeface.BOLD));
-        titlePaint.setTextSize(20);
-
-        paint.setTextSize(12);
-        paint.setColor(Color.BLACK);
-
-        int startX = 40;
-        int startY = 50;
-
-        // --- CABECERA ---
-        // Aquí podrías dibujar tu logo con: canvas.drawBitmap(bitmap, x, y, paint);
-
-        canvas.drawText("REPORTE DE VENTAS - CAJAI CAFE", 595/2, startY, titlePaint);
-        startY += 30;
-        canvas.drawText("Lote: " + etLote.getText().toString(), startX, startY, paint);
-        startY += 20;
-        canvas.drawText("RUC Emisor: " + etRuc.getText().toString(), startX, startY, paint);
-        startY += 30;
-
-        canvas.drawLine(startX, startY, 550, startY, paint); // Línea separadora
-        startY += 20;
-
-        // Cabeceras
-        canvas.drawText("Producto", startX, startY, paint);
-        canvas.drawText("Cant.", 300, startY, paint);
-        canvas.drawText("Total", 450, startY, paint);
-        startY += 20;
-
-        double granTotal = 0;
-        for (Venta v : listaVentas) {
-            String prod = v.producto.length() > 30 ? v.producto.substring(0,30) + "..." : v.producto;
-            canvas.drawText(prod, startX, startY, paint);
-            canvas.drawText(String.valueOf(v.cantidad), 300, startY, paint);
-            canvas.drawText("S/ " + v.total, 450, startY, paint);
-            granTotal += v.total;
-            startY += 15;
-
-            // Salto de página simple (si la lista es muy larga, necesitarías lógica extra)
-            if (startY > 800) break;
+        String clave = claveElegida();
+        if (clave == null) {
+            Toast.makeText(requireContext(), "Elige un mes o un lote", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        String generadoEl = new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.US).format(new Date());
+        Reporte reporte;
+        if (opcionesPorMes) {
+            Map<String, String> nombrePorId = new HashMap<>();
+            for (Producto p : productos.values()) nombrePorId.put(p.id, p.nombre);
+            reporte = Reporte.delMes(clave, listaVentas, gastos, lotes, nombrePorId, generadoEl);
+        } else {
+            Lote lote = lotes.get(clave);
+            if (lote == null) return;
+            double precioBolsa = ResumenFinanciero.precioEfectivo(productos.get("medio_kilo"));
+            reporte = Reporte.delLote(lote, listaVentas, gastos, precioBolsa, generadoEl);
         }
 
-        startY += 20;
-        canvas.drawLine(startX, startY, 550, startY, paint);
-        startY += 30;
-
-        paint.setTextSize(16);
-        paint.setTypeface(android.graphics.Typeface.create(android.graphics.Typeface.DEFAULT, android.graphics.Typeface.BOLD));
-        canvas.drawText("TOTAL GENERAL: S/ " + String.format("%.2f", granTotal), 350, startY, paint);
-
-        pdfDocument.finishPage(myPage);
-
-        // Guardar archivo
-        File file = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), "Reporte_CajaiCafe.pdf");
+        PdfDocument pdf = GeneradorPdf.generar(reporte);
+        Uri uri;
         try {
-            pdfDocument.writeTo(new FileOutputStream(file));
-            Toast.makeText(getContext(), "PDF guardado en Descargas", Toast.LENGTH_LONG).show();
-        } catch (IOException e) {
-            e.printStackTrace();
-            Toast.makeText(getContext(), "Error generando PDF: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+            uri = ArchivoPdf.guardar(requireContext(), pdf, reporte.nombreArchivo);
+        } catch (Exception e) {
+            Toast.makeText(requireContext(), "No se pudo guardar el PDF: " + e.getMessage(), Toast.LENGTH_LONG).show();
+            return;
+        } finally {
+            pdf.close();
         }
-        pdfDocument.close();
+        mostrarPdfListo(reporte, uri);
+    }
+
+    private void mostrarPdfListo(Reporte reporte, Uri uri) {
+        new AlertDialog.Builder(requireContext())
+                .setTitle("PDF listo")
+                .setMessage(reporte.titulo + "\n\nGuardado en " + ArchivoPdf.dondeQuedo() + " como " + reporte.nombreArchivo + ".")
+                .setPositiveButton("Compartir", (d, w) -> abrirIntent(ArchivoPdf.compartir(uri, reporte.titulo)))
+                .setNeutralButton("Abrir", (d, w) -> abrirIntent(ArchivoPdf.abrir(uri)))
+                .setNegativeButton("Cerrar", null)
+                .show();
+    }
+
+    private void abrirIntent(Intent intent) {
+        try {
+            startActivity(intent);
+        } catch (ActivityNotFoundException e) {
+            Toast.makeText(requireContext(), "No hay ninguna app para abrir PDF en este celular", Toast.LENGTH_LONG).show();
+        }
+    }
+
+    private static String texto(String s) {
+        return s == null ? "" : s;
     }
 }
