@@ -34,7 +34,7 @@ Leyenda: `[ ]` pendiente · `[x]` hecha (se marca dentro del PR que la resuelve)
 - [x] **2.2 Gastos generales.** Nodo `gastos/{id}` (fecha, categoría, monto, nota, loteId
   opcional, uid) + pantalla "Registrar gasto" con categorías fijas (empaque, transporte,
   publicidad, servicios, mantenimiento, otros).
-- [ ] **2.3 Pestaña Inicio (resumen del mes).** Clase pura `ResumenFinanciero` (con tests):
+- [x] **2.3 Pestaña Inicio (resumen del mes).** Clase pura `ResumenFinanciero` (con tests):
   ingresos, cobrado, por cobrar, costo de lo vendido, gastos, utilidad neta y margen; selector
   de mes; tarjeta por lote con punto de equilibrio ("faltan N bolsas para recuperar la
   inversión").
