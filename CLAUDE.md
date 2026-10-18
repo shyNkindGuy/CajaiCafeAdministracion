@@ -24,7 +24,7 @@ con `firebase deploy --only database`); cada nodo nuevo necesita su entrada ahí
 | Venta | `VentaFragment` | Registra una venta y descuenta el stock (del lote o del producto, ver Stock) con `runTransaction` |
 | Historial | `HistorialFragment` + `VentaAdapter` | Lista ventas, editar estado de pago, borrar (devuelve el stock) |
 | Lotes | `LotesFragment` → `NuevoLoteActivity`, `LoteDetalleActivity` | Costeo por costal y costo unitario (`CosteoLote`, con tests), stock por lote, cerrar lote |
-| Reportes | `DashboardFragment` → `GastoActivity` | Totales de bolsas, total cobrado, PDF interno; "Registrar gasto" (categorías fijas y validación en `ValidacionGasto`, con tests) |
+| Reportes | `DashboardFragment` → `GastoActivity` | Totales de bolsas, total cobrado; PDF por mes o por lote (contenido en `Reporte`, con tests → `GeneradorPdf` → `ArchivoPdf`) con abrir/compartir; "Registrar gasto" (categorías fijas y validación en `ValidacionGasto`, con tests) |
 
 Precios: el total de una venta se calcula solo en `PrecioCalculator` (con tests). Nada de precios
 escritos en el código: todo se configura en `productos/{id}` en Firebase. Regla del negocio: la bolsa
@@ -47,6 +47,11 @@ precio efectivo de 1/2 kg con oferta (S/22.50). Cuentas por cobrar: saldo = `tot
 regla), todas las fechas, de la deuda más antigua a la más nueva; el recordatorio se comparte a
 WhatsApp (o WhatsApp Business) sin número porque las ventas no guardan teléfono.
 
+PDF: `Reporte` arma las líneas (mes: resumen + ventas + gastos; lote: costeo + gastos y ventas del
+lote + equilibrio + stock) y `GeneradorPdf` las pinta en A4 con salto de página. `ArchivoPdf` guarda
+sin permisos: Android 10+ en `Descargas/CajaiCafe` con `MediaStore`; Android 7–9 en la carpeta de la
+app compartida con `FileProvider` (`res/xml/rutas_reportes.xml`). Es un reporte interno, no comprobante SUNAT.
+
 Stock: las bolsas de 1/2 y 1/4 kg salen del lote (`lotes/{id}/stockBolsas12|14`, se suman con
 "Registrar empacado" en el detalle del lote); 1 kg y grano siguen usando `productos/{id}/stock`. El
 mapeo es por id de producto (`medio_kilo`, `cuarto_kilo`) en `StockLote` (con tests). La venta sugiere
@@ -67,7 +72,6 @@ Convención: todo `addValueEventListener` guarda el listener en un campo y se qu
 
 ## Deuda conocida (no re-descubrir; ver `docs/PLAN.md` para el orden de trabajo)
 - Las ventas anteriores a 1.2 no tienen `loteId` y las anteriores a 1.3 no tienen `productoId` (al borrarlas se busca el producto por nombre).
-- `DashboardFragment`: el campo "Lote" no filtra nada; el PDF escribe directo en Descargas públicas (falla con scoped storage en Android 10+); no es comprobante SUNAT.
 - El repo es **público** y `google-services.json` está commiteado: cualquiera puede crear una cuenta
   de Firebase Auth con esa API key. Por eso las reglas piden estar en `usuarios/`, no solo `auth != null`.
 

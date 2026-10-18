@@ -116,27 +116,46 @@
             android:textSize="18sp"
             android:textStyle="bold" android:layout_height="wrap_content"  android:layout_width="match_parent"/>
 
-        <EditText
-            android:id="@+id/etLote"
+        <RadioGroup
+            android:id="@+id/rgTipoReporte"
+            android:orientation="horizontal"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Nombre del Lote"
-            android:minHeight="48dp"
-            android:text="LOTE1-NOV2025" />
+            android:layout_height="wrap_content">
+            <RadioButton
+                android:id="@+id/rbPorMes"
+                android:text="Por mes"
+                android:checked="true"
+                android:minHeight="48dp"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content" />
+            <RadioButton
+                android:id="@+id/rbPorLote"
+                android:text="Por lote"
+                android:minHeight="48dp"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content" />
+        </RadioGroup>
 
-        <EditText
-            android:id="@+id/etRuc"
+        <Spinner
+            android:id="@+id/spinnerReporte"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="RUC / DNI"
-            android:minHeight="48dp"
-            android:text="20123456789" />
+            android:minHeight="48dp" />
+
+        <TextView
+            android:text="Reporte interno (no es comprobante de pago). Se guarda en Descargas y se puede compartir."
+            android:textSize="12sp"
+            android:textColor="#757575"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
 
         <Button
             android:id="@+id/btnExportarPDF"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Descargar Boleta PDF"
+            android:text="Generar PDF"
             android:backgroundTint="#5D4037"
             android:textColor="#FFFFFF"
             android:layout_marginTop="10dp"/>

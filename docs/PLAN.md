@@ -42,7 +42,7 @@ Leyenda: `[ ]` pendiente · `[x]` hecha (se marca dentro del PR que la resuelve)
   recordatorio por WhatsApp.
 
 ## Fase 3 — Reportes
-- [ ] **3.1 PDF por lote o por mes** guardado con `MediaStore` (Android 10+) y botón compartir.
+- [x] **3.1 PDF por lote o por mes** guardado con `MediaStore` (Android 10+) y botón compartir.
 - [ ] **3.2 Exportar CSV** (abre en Excel/Google Sheets) desde el dispositivo, sin Cloud Functions.
 - [ ] **3.3 Alerta de stock bajo** por lote (umbral configurable).
 
