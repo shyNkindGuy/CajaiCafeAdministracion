@@ -20,7 +20,7 @@ con `firebase deploy --only database`); cada nodo nuevo necesita su entrada ahí
 ## Pantallas (bottom nav en `MainActivity`)
 | Tab | Clase | Qué hace |
 |---|---|---|
-| Inicio (se abre al entrar) | `InicioFragment` | Resumen del mes elegido (`ResumenFinanciero`, con tests) y punto de equilibrio de cada lote abierto |
+| Inicio (se abre al entrar) | `InicioFragment` → `CuentasPorCobrarActivity` | Resumen del mes elegido (`ResumenFinanciero`, con tests) y punto de equilibrio de cada lote abierto; "Ver todas las cuentas por cobrar" (saldo y recordatorio por WhatsApp en `CuentasPorCobrar`, con tests) |
 | Venta | `VentaFragment` | Registra una venta y descuenta el stock (del lote o del producto, ver Stock) con `runTransaction` |
 | Historial | `HistorialFragment` + `VentaAdapter` | Lista ventas, editar estado de pago, borrar (devuelve el stock) |
 | Lotes | `LotesFragment` → `NuevoLoteActivity`, `LoteDetalleActivity` | Costeo por costal y costo unitario (`CosteoLote`, con tests), stock por lote, cerrar lote |
@@ -43,7 +43,9 @@ bolsa (`CosteoLote.costoCafePorBolsa` × cantidad; 1 kg, grano y ventas sin lote
 gastos = todo `gastos/` del mes (el empaque entra ahí al comprarse, por eso no va en el costo de lo
 vendido); utilidad neta = ingresos − costo − gastos. Punto de equilibrio de un lote: invertido =
 `totalGastos` + gastos con su `loteId`, contra todas sus ventas; las bolsas que faltan se cuentan a
-precio efectivo de 1/2 kg con oferta (S/22.50).
+precio efectivo de 1/2 kg con oferta (S/22.50). Cuentas por cobrar: saldo = `total` − cobrado (misma
+regla), todas las fechas, de la deuda más antigua a la más nueva; el recordatorio se comparte a
+WhatsApp (o WhatsApp Business) sin número porque las ventas no guardan teléfono.
 
 Stock: las bolsas de 1/2 y 1/4 kg salen del lote (`lotes/{id}/stockBolsas12|14`, se suman con
 "Registrar empacado" en el detalle del lote); 1 kg y grano siguen usando `productos/{id}/stock`. El

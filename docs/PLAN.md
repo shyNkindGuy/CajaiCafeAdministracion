@@ -38,7 +38,7 @@ Leyenda: `[ ]` pendiente · `[x]` hecha (se marca dentro del PR que la resuelve)
   ingresos, cobrado, por cobrar, costo de lo vendido, gastos, utilidad neta y margen; selector
   de mes; tarjeta por lote con punto de equilibrio ("faltan N bolsas para recuperar la
   inversión").
-- [ ] **2.4 Cuentas por cobrar.** Lista de ventas `pendiente`/`parcial` con saldo y botón de
+- [x] **2.4 Cuentas por cobrar.** Lista de ventas `pendiente`/`parcial` con saldo y botón de
   recordatorio por WhatsApp.
 
 ## Fase 3 — Reportes
