@@ -16,8 +16,10 @@ import androidx.fragment.app.Fragment;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.*;
+import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -66,6 +68,7 @@ public class DashboardFragment extends Fragment {
 
         ((RadioGroup) view.findViewById(R.id.rgTipoReporte)).setOnCheckedChangeListener((g, id) -> actualizarOpcionesReporte());
         btnExportar.setOnClickListener(v -> generarPDF());
+        view.findViewById(R.id.btnExportarCSV).setOnClickListener(v -> exportarCsv());
         view.findViewById(R.id.btnRegistrarGasto).setOnClickListener(v ->
                 startActivity(new Intent(requireContext(), GastoActivity.class)));
 
@@ -234,7 +237,7 @@ public class DashboardFragment extends Fragment {
         return (pos >= 0 && pos < clavesReporte.size()) ? clavesReporte.get(pos) : null;
     }
 
-    /** Arma el reporte elegido (Reporte), lo pinta (GeneradorPdf) y lo guarda sin pedir permisos (ArchivoPdf). */
+    /** Arma el reporte elegido (Reporte), lo pinta (GeneradorPdf) y lo guarda sin pedir permisos (ArchivoDescargas). */
     private void generarPDF() {
         String clave = claveElegida();
         if (clave == null) {
@@ -257,7 +260,7 @@ public class DashboardFragment extends Fragment {
         PdfDocument pdf = GeneradorPdf.generar(reporte);
         Uri uri;
         try {
-            uri = ArchivoPdf.guardar(requireContext(), pdf, reporte.nombreArchivo);
+            uri = ArchivoDescargas.guardar(requireContext(), reporte.nombreArchivo, ArchivoDescargas.MIME_PDF, pdf::writeTo);
         } catch (Exception e) {
             Toast.makeText(requireContext(), "No se pudo guardar el PDF: " + e.getMessage(), Toast.LENGTH_LONG).show();
             return;
@@ -270,9 +273,49 @@ public class DashboardFragment extends Fragment {
     private void mostrarPdfListo(Reporte reporte, Uri uri) {
         new AlertDialog.Builder(requireContext())
                 .setTitle("PDF listo")
-                .setMessage(reporte.titulo + "\n\nGuardado en " + ArchivoPdf.dondeQuedo() + " como " + reporte.nombreArchivo + ".")
-                .setPositiveButton("Compartir", (d, w) -> abrirIntent(ArchivoPdf.compartir(uri, reporte.titulo)))
-                .setNeutralButton("Abrir", (d, w) -> abrirIntent(ArchivoPdf.abrir(uri)))
+                .setMessage(reporte.titulo + "\n\nGuardado en " + ArchivoDescargas.dondeQuedo() + " como " + reporte.nombreArchivo + ".")
+                .setPositiveButton("Compartir", (d, w) -> abrirIntent(ArchivoDescargas.compartir(
+                        Collections.singletonList(uri), ArchivoDescargas.MIME_PDF, reporte.titulo)))
+                .setNeutralButton("Abrir", (d, w) -> abrirIntent(ArchivoDescargas.abrir(uri, ArchivoDescargas.MIME_PDF)))
+                .setNegativeButton("Cerrar", null)
+                .show();
+    }
+
+    /** Ventas y gastos de lo elegido (mes o lote) en dos CSV (ExportacionCsv) para abrir en Excel o Google Sheets. */
+    private void exportarCsv() {
+        String clave = claveElegida();
+        if (clave == null) {
+            Toast.makeText(requireContext(), "Elige un mes o un lote", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        Lote lote = opcionesPorMes ? null : lotes.get(clave);
+        if (!opcionesPorMes && lote == null) return;
+        String nombre = opcionesPorMes ? clave : lote.codigo; // para el archivo: "2026-10" o "LOTE1-NOV2025"
+        String titulo = opcionesPorMes ? ResumenFinanciero.etiquetaMes(clave) : "lote " + lote.codigo;
+
+        List<Venta> ventasElegidas = ExportacionCsv.ventasDe(listaVentas, opcionesPorMes, clave);
+        List<Gasto> gastosElegidos = ExportacionCsv.gastosDe(gastos, opcionesPorMes, clave);
+        byte[] csvVentas = ExportacionCsv.ventas(ventasElegidas, lotes).getBytes(StandardCharsets.UTF_8);
+        byte[] csvGastos = ExportacionCsv.gastos(gastosElegidos, lotes).getBytes(StandardCharsets.UTF_8);
+        String archivoVentas = ExportacionCsv.nombreArchivo("Ventas", nombre);
+        String archivoGastos = ExportacionCsv.nombreArchivo("Gastos", nombre);
+        String mime = ArchivoDescargas.mimeCsv();
+
+        List<Uri> uris = new ArrayList<>();
+        try {
+            uris.add(ArchivoDescargas.guardar(requireContext(), archivoVentas, mime, out -> out.write(csvVentas)));
+            uris.add(ArchivoDescargas.guardar(requireContext(), archivoGastos, mime, out -> out.write(csvGastos)));
+        } catch (Exception e) {
+            Toast.makeText(requireContext(), "No se pudo guardar el CSV: " + e.getMessage(), Toast.LENGTH_LONG).show();
+            return;
+        }
+        new AlertDialog.Builder(requireContext())
+                .setTitle("CSV listos")
+                .setMessage("Ventas de " + titulo + ": " + ventasElegidas.size() + " filas.\nGastos: " + gastosElegidos.size()
+                        + " filas.\n\nGuardados en " + ArchivoDescargas.dondeQuedo() + " como " + archivoVentas + " y "
+                        + archivoGastos + ". Se abren con Excel o Google Sheets.")
+                .setPositiveButton("Compartir", (d, w) -> abrirIntent(ArchivoDescargas.compartir(uris, mime, "CSV de " + titulo)))
+                .setNeutralButton("Abrir ventas", (d, w) -> abrirIntent(ArchivoDescargas.abrir(uris.get(0), mime)))
                 .setNegativeButton("Cerrar", null)
                 .show();
     }
@@ -281,7 +324,7 @@ public class DashboardFragment extends Fragment {
         try {
             startActivity(intent);
         } catch (ActivityNotFoundException e) {
-            Toast.makeText(requireContext(), "No hay ninguna app para abrir PDF en este celular", Toast.LENGTH_LONG).show();
+            Toast.makeText(requireContext(), "No hay ninguna app para abrir este archivo en el celular", Toast.LENGTH_LONG).show();
         }
     }
 
