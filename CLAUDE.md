@@ -24,7 +24,7 @@ con `firebase deploy --only database`); cada nodo nuevo necesita su entrada ahí
 | Venta | `VentaFragment` | Registra una venta y descuenta el stock (del lote o del producto, ver Stock) con `runTransaction` |
 | Historial | `HistorialFragment` + `VentaAdapter` | Lista ventas, editar estado de pago, borrar (devuelve el stock) |
 | Lotes | `LotesFragment` → `NuevoLoteActivity`, `LoteDetalleActivity` | Costeo por costal y costo unitario (`CosteoLote`, con tests), stock por lote, cerrar lote |
-| Reportes | `DashboardFragment` → `GastoActivity` | Totales de bolsas, total cobrado; PDF por mes o por lote (contenido en `Reporte`, con tests → `GeneradorPdf` → `ArchivoPdf`) con abrir/compartir; "Registrar gasto" (categorías fijas y validación en `ValidacionGasto`, con tests) |
+| Reportes | `DashboardFragment` → `GastoActivity` | Totales de bolsas, total cobrado; PDF por mes o por lote (contenido en `Reporte`, con tests → `GeneradorPdf` → `ArchivoDescargas`) y CSV de ventas y gastos (`ExportacionCsv`, con tests) con abrir/compartir; "Registrar gasto" (categorías fijas y validación en `ValidacionGasto`, con tests) |
 
 Precios: el total de una venta se calcula solo en `PrecioCalculator` (con tests). Nada de precios
 escritos en el código: todo se configura en `productos/{id}` en Firebase. Regla del negocio: la bolsa
@@ -48,9 +48,12 @@ regla), todas las fechas, de la deuda más antigua a la más nueva; el recordato
 WhatsApp (o WhatsApp Business) sin número porque las ventas no guardan teléfono.
 
 PDF: `Reporte` arma las líneas (mes: resumen + ventas + gastos; lote: costeo + gastos y ventas del
-lote + equilibrio + stock) y `GeneradorPdf` las pinta en A4 con salto de página. `ArchivoPdf` guarda
-sin permisos: Android 10+ en `Descargas/CajaiCafe` con `MediaStore`; Android 7–9 en la carpeta de la
-app compartida con `FileProvider` (`res/xml/rutas_reportes.xml`). Es un reporte interno, no comprobante SUNAT.
+lote + equilibrio + stock) y `GeneradorPdf` las pinta en A4 con salto de página. CSV (`ExportacionCsv`):
+dos archivos (ventas y gastos) del mismo mes o lote, comas, punto decimal, UTF-8 con BOM y `\r\n`; los
+textos que empiezan con = + - @ llevan un apóstrofo para que Excel no los ejecute. `ArchivoDescargas`
+guarda los dos formatos sin permisos: Android 10+ en `Descargas/CajaiCafe` con `MediaStore` (el MIME del
+CSV sale de `MimeTypeMap` para que no le agregue otra extensión); Android 7–9 en la carpeta de la app
+compartida con `FileProvider` (`res/xml/rutas_reportes.xml`). Es un reporte interno, no comprobante SUNAT.
 
 Stock: las bolsas de 1/2 y 1/4 kg salen del lote (`lotes/{id}/stockBolsas12|14`, se suman con
 "Registrar empacado" en el detalle del lote); 1 kg y grano siguen usando `productos/{id}/stock`. El

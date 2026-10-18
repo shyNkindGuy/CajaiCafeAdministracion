@@ -145,7 +145,7 @@
             android:minHeight="48dp" />
 
         <TextView
-            android:text="Reporte interno (no es comprobante de pago). Se guarda en Descargas y se puede compartir."
+            android:text="Reporte interno (no es comprobante de pago). El PDF y el CSV (ventas y gastos) se guardan en Descargas y se pueden compartir."
             android:textSize="12sp"
             android:textColor="#757575"
             android:layout_width="match_parent"
@@ -159,6 +159,15 @@
             android:backgroundTint="#5D4037"
             android:textColor="#FFFFFF"
             android:layout_marginTop="10dp"/>
+
+        <Button
+            android:id="@+id/btnExportarCSV"
+            style="?attr/materialButtonOutlinedStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:textColor="#5D4037"
+            android:text="Exportar CSV (Excel / Sheets)" />
 
         <TextView
             android:id="@+id/tvSesion"
