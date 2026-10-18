@@ -1,5 +1,6 @@
 package com.example.cajaicafeadministracion;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -59,6 +60,8 @@ public class InicioFragment extends Fragment {
         tvGastosMes = view.findViewById(R.id.tvGastosMes);
         tvSinLotes = view.findViewById(R.id.tvSinLotes);
         contenedorLotes = view.findViewById(R.id.contenedorLotes);
+        view.findViewById(R.id.btnCuentasPorCobrar).setOnClickListener(v ->
+                startActivity(new Intent(requireContext(), CuentasPorCobrarActivity.class)));
 
         spinnerMes.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
