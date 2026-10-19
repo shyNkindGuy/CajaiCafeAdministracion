@@ -60,14 +60,17 @@ Stock: las bolsas de 1/2 y 1/4 kg salen del lote (`lotes/{id}/stockBolsas12|14`,
 mapeo es por id de producto (`medio_kilo`, `cuarto_kilo`) en `StockLote` (con tests). La venta sugiere
 el lote abierto más antiguo con bolsas (FIFO), respeta el que se elija a mano y guarda su `loteId`.
 Borrar una venta devuelve las bolsas a donde salieron (`StockLote.rutaDevolucion`) en una sola
-escritura atómica (`updateChildren` con `ServerValue.increment`).
+escritura atómica (`updateChildren` con `ServerValue.increment`). Aviso de stock bajo (`AlertaStock`, con
+tests): un lote abierto avisa cuando le quedan `stockMinimo` bolsas o menos de un tamaño (umbral de
+`productos/medio_kilo|cuarto_kilo/stockMinimo`; sin configurar = 5, 0 = sin aviso). Se ve en Inicio
+(tarjeta naranja + botón para cambiar el umbral), en la lista de Lotes (en rojo) y al vender (Toast).
 
 Convención: todo `addValueEventListener` guarda el listener en un campo y se quita en
 `onDestroyView` (fragments) u `onDestroy` (activities). En callbacks asíncronos no usar
 `requireContext()`: usar el contexto de la app capturado antes, y `getView() != null` antes de tocar vistas.
 
 ## Nodos de Firebase
-- `productos/{id}`: `nombre, precio, stock`, y opcional `ofertaCantidad, ofertaPrecio` y `costoBolsa, costoSticker` (empaque por unidad, para el costo por bolsa del lote) (catálogo global)
+- `productos/{id}`: `nombre, precio, stock`, y opcional `ofertaCantidad, ofertaPrecio` y `costoBolsa, costoSticker` (empaque por unidad, para el costo por bolsa del lote) y `stockMinimo` (aviso de stock bajo) (catálogo global)
 - `ventas/{id}`: `fecha, producto, cliente, precioUnitario, cantidad, estadoPago (pagado|parcial|pendiente), montoParcial, total, loteId, productoId`
 - `lotes/{id}`: costos (pergamino/pilado/tostado kg×precio, flete, electricidad kW×h×S//kWh, empaque), `totalGastos`, `stockBolsas12`, `stockBolsas14`, `estado (abierto|cerrado)`
 - `usuarios/{uid}`: `true` para cada cuenta autorizada (solo se edita desde la consola)

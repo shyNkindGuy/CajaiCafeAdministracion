@@ -1,16 +1,21 @@
 package com.example.cajaicafeadministracion;
 
+import android.app.AlertDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
+import android.text.InputType;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -30,7 +35,9 @@ public class InicioFragment extends Fragment {
 
     private Spinner spinnerMes;
     private TextView tvUtilidad, tvMargen, tvIngresos, tvCobrado, tvPorCobrar;
-    private TextView tvCostoVendido, tvSinCosto, tvGastosMes, tvSinLotes;
+    private TextView tvCostoVendido, tvSinCosto, tvGastosMes, tvSinLotes, tvUmbralesStock;
+    private View cardStockBajo;
+    private LinearLayout contenedorAvisosStock;
     private LinearLayout contenedorLotes;
 
     private DatabaseReference ventasRef, gastosRef, lotesRef, productosRef;
@@ -60,6 +67,10 @@ public class InicioFragment extends Fragment {
         tvGastosMes = view.findViewById(R.id.tvGastosMes);
         tvSinLotes = view.findViewById(R.id.tvSinLotes);
         contenedorLotes = view.findViewById(R.id.contenedorLotes);
+        tvUmbralesStock = view.findViewById(R.id.tvUmbralesStock);
+        cardStockBajo = view.findViewById(R.id.cardStockBajo);
+        contenedorAvisosStock = view.findViewById(R.id.contenedorAvisosStock);
+        view.findViewById(R.id.btnUmbralStock).setOnClickListener(v -> cambiarUmbrales());
         view.findViewById(R.id.btnCuentasPorCobrar).setOnClickListener(v ->
                 startActivity(new Intent(requireContext(), CuentasPorCobrarActivity.class)));
 
@@ -209,6 +220,80 @@ public class InicioFragment extends Fragment {
         tvGastosMes.setText("Gastos del mes: " + PrecioCalculator.formatear(r.gastos));
 
         pintarLotes();
+        pintarAvisosStock();
+    }
+
+    /** Tarjeta naranja arriba con los lotes abiertos que tienen pocas bolsas (AlertaStock). */
+    private void pintarAvisosStock() {
+        int umbral12 = AlertaStock.umbral(productos.get("medio_kilo"));
+        int umbral14 = AlertaStock.umbral(productos.get("cuarto_kilo"));
+        tvUmbralesStock.setText(AlertaStock.textoUmbrales(umbral12, umbral14));
+
+        List<String> avisos = AlertaStock.avisos(lotes.values(), umbral12, umbral14);
+        contenedorAvisosStock.removeAllViews();
+        for (String aviso : avisos) {
+            TextView fila = new TextView(contenedorAvisosStock.getContext());
+            fila.setText("• " + aviso);
+            contenedorAvisosStock.addView(fila);
+        }
+        cardStockBajo.setVisibility(avisos.isEmpty() ? View.GONE : View.VISIBLE);
+    }
+
+    /**
+     * Cambia el umbral de cada tamaño (productos/medio_kilo|cuarto_kilo/stockMinimo). Solo escribe en
+     * productos que ya existen: escribir en uno que no existe crearía un producto sin nombre ni precio.
+     */
+    private void cambiarUmbrales() {
+        Producto medio = productos.get("medio_kilo");
+        Producto cuarto = productos.get("cuarto_kilo");
+        if (medio == null && cuarto == null) {
+            Toast.makeText(requireContext(), "Primero crea los productos medio_kilo y cuarto_kilo en Firebase", Toast.LENGTH_LONG).show();
+            return;
+        }
+        Context ctx = requireContext();
+        LinearLayout layout = new LinearLayout(ctx);
+        layout.setOrientation(LinearLayout.VERTICAL);
+        layout.setPadding(48, 16, 48, 0);
+        EditText et12 = campoUmbral(ctx, layout, "Bolsas de 1/2 kg", medio);
+        EditText et14 = campoUmbral(ctx, layout, "Bolsas de 1/4 kg", cuarto);
+
+        new AlertDialog.Builder(ctx)
+                .setTitle("Aviso de stock bajo")
+                .setMessage("Avisar cuando un lote abierto tenga esta cantidad de bolsas o menos. 0 = sin aviso.")
+                .setView(layout)
+                .setPositiveButton("Guardar", (d, w) -> {
+                    int n12 = medio != null ? AlertaStock.parsearUmbral(et12.getText().toString()) : 0;
+                    int n14 = cuarto != null ? AlertaStock.parsearUmbral(et14.getText().toString()) : 0;
+                    if (n12 < 0 || n14 < 0) {
+                        Toast.makeText(ctx, "Escribe un número entero (0 = sin aviso)", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                    Map<String, Object> cambios = new HashMap<>();
+                    if (medio != null) cambios.put("medio_kilo/stockMinimo", n12);
+                    if (cuarto != null) cambios.put("cuarto_kilo/stockMinimo", n14);
+                    final Context appCtx = ctx.getApplicationContext();
+                    productosRef.updateChildren(cambios)
+                            .addOnSuccessListener(unused -> Toast.makeText(appCtx, "Aviso de stock guardado", Toast.LENGTH_SHORT).show())
+                            .addOnFailureListener(e -> Toast.makeText(appCtx, "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show());
+                })
+                .setNegativeButton("Cancelar", null)
+                .show();
+    }
+
+    private static EditText campoUmbral(Context ctx, LinearLayout layout, String nombre, @Nullable Producto p) {
+        TextView etiqueta = new TextView(ctx);
+        etiqueta.setText(nombre);
+        layout.addView(etiqueta);
+        EditText et = new EditText(ctx);
+        et.setInputType(InputType.TYPE_CLASS_NUMBER);
+        if (p != null) {
+            et.setText(String.valueOf(AlertaStock.umbral(p)));
+        } else {
+            et.setEnabled(false);
+            et.setHint("no existe en productos/");
+        }
+        layout.addView(et);
+        return et;
     }
 
     /** Una fila por lote abierto (del más antiguo al más nuevo) con su punto de equilibrio. */

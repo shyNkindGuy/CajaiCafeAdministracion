@@ -392,9 +392,18 @@ public class VentaFragment extends Fragment {
                     return;
                 }
 
+                // Si el lote quedó con pocas bolsas, se avisa junto con la venta (AlertaStock).
+                Long restante = currentData.getValue(Long.class);
+                final String avisoStock = (campoLote != null && restante != null
+                        && AlertaStock.bajo(restante.intValue(), AlertaStock.umbral(p)))
+                        ? "\nOjo, " + AlertaStock.aviso(lote.codigo, restante.intValue(),
+                                StockLote.CAMPO_MEDIO_KILO.equals(campoLote) ? "1/2 kg" : "1/4 kg")
+                        : "";
+
                 ventasRef.child(idVenta).setValue(venta)
                         .addOnSuccessListener(aVoid -> {
-                            Toast.makeText(appCtx, "Venta registrada. Total " + PrecioCalculator.formatear(total), Toast.LENGTH_LONG).show();
+                            Toast.makeText(appCtx, "Venta registrada. Total " + PrecioCalculator.formatear(total) + avisoStock,
+                                    Toast.LENGTH_LONG).show();
                             if (getView() == null) return; // la pestaña ya se cerró
                             etCantidad.setText("");
                             etNombre.setText("");

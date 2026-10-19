@@ -11,6 +11,21 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
+        <!-- Aviso de stock bajo (AlertaStock): solo se ve si algún lote abierto tiene pocas bolsas. -->
+        <androidx.cardview.widget.CardView
+            android:id="@+id/cardStockBajo"
+            android:visibility="gone"
+            android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:layout_marginBottom="12dp" android:backgroundTint="#FFE0B2"
+            card_view:cardCornerRadius="12dp" card_view:cardElevation="3dp">
+            <LinearLayout android:orientation="vertical" android:padding="16dp" android:layout_width="match_parent" android:layout_height="wrap_content">
+                <TextView android:text="⚠ Stock bajo" android:textStyle="bold" android:textSize="16sp" android:textColor="#E65100" android:layout_marginBottom="4dp" android:layout_width="wrap_content" android:layout_height="wrap_content" />
+                <!-- Un aviso por lote y tamaño, agregados desde InicioFragment. -->
+                <LinearLayout android:id="@+id/contenedorAvisosStock" android:orientation="vertical" android:layout_width="match_parent" android:layout_height="wrap_content" />
+                <TextView android:text="Registra el empacado en el detalle del lote, o abre otro costal." android:textSize="12sp" android:textColor="#757575" android:layout_marginTop="4dp" android:layout_width="wrap_content" android:layout_height="wrap_content" />
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+
         <TextView
             android:text="Resumen del mes"
             android:textSize="24sp"
@@ -84,6 +99,14 @@
                 <!-- Una fila por lote, agregadas desde InicioFragment. -->
                 <LinearLayout android:id="@+id/contenedorLotes" android:orientation="vertical" android:layout_width="match_parent" android:layout_height="wrap_content" />
                 <TextView android:text="Lo invertido es el costeo del lote más los gastos registrados con ese lote; lo recuperado, todas sus ventas registradas." android:textSize="12sp" android:textColor="#757575" android:layout_marginTop="6dp" android:layout_width="wrap_content" android:layout_height="wrap_content" />
+                <TextView android:id="@+id/tvUmbralesStock" android:text="" android:layout_marginTop="10dp" android:layout_width="wrap_content" android:layout_height="wrap_content" />
+                <Button
+                    android:id="@+id/btnUmbralStock"
+                    style="?attr/materialButtonOutlinedStyle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/cafeMedio"
+                    android:text="Cambiar aviso de stock bajo" />
             </LinearLayout>
         </androidx.cardview.widget.CardView>
 

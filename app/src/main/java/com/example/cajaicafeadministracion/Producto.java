@@ -16,6 +16,10 @@ public class Producto {
     public double costoBolsa;
     public double costoSticker;
 
+    // Aviso de stock bajo por lote (AlertaStock): avisar cuando queden stockMinimo bolsas o menos.
+    // Integer y no int para distinguir "sin configurar" (null → 5) de "apagado" (0).
+    public Integer stockMinimo;
+
     public Producto(){}
 
     public Producto(String id, String nombre, double precio, long stock) {

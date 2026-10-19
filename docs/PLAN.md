@@ -44,7 +44,7 @@ Leyenda: `[ ]` pendiente · `[x]` hecha (se marca dentro del PR que la resuelve)
 ## Fase 3 — Reportes
 - [x] **3.1 PDF por lote o por mes** guardado con `MediaStore` (Android 10+) y botón compartir.
 - [x] **3.2 Exportar CSV** (abre en Excel/Google Sheets) desde el dispositivo, sin Cloud Functions.
-- [ ] **3.3 Alerta de stock bajo** por lote (umbral configurable).
+- [x] **3.3 Alerta de stock bajo** por lote (umbral configurable).
 
 ## Fase 4 — Rediseño UI/UX
 - [ ] **4.1 Tema Material 3 con colores de marca** (café/crema), modo oscuro, tipografía.

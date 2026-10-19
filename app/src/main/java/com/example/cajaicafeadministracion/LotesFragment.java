@@ -24,6 +24,8 @@ public class LotesFragment extends Fragment {
     private final List<Lote> listaLotes = new ArrayList<>();
     private LoteAdapter adapter;
     private ValueEventListener lotesListener;
+    private DatabaseReference productosRef;
+    private ValueEventListener productosListener;
 
     @Nullable
     @Override
@@ -40,6 +42,20 @@ public class LotesFragment extends Fragment {
         lotesRef = FirebaseDatabase.getInstance().getReference("lotes");
         cargarLotes();
 
+        // Umbrales del aviso de stock bajo (productos/medio_kilo|cuarto_kilo/stockMinimo).
+        productosRef = FirebaseDatabase.getInstance().getReference("productos");
+        productosListener = productosRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                adapter.setUmbrales(
+                        AlertaStock.umbral(snapshot.child("medio_kilo").getValue(Producto.class)),
+                        AlertaStock.umbral(snapshot.child("cuarto_kilo").getValue(Producto.class)));
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {}
+        });
+
         FloatingActionButton fab = view.findViewById(R.id.fabNuevoLote);
         fab.setOnClickListener(v -> startActivity(new Intent(getContext(), NuevoLoteActivity.class)));
 
@@ -49,6 +65,7 @@ public class LotesFragment extends Fragment {
     @Override
     public void onDestroyView() {
         if (lotesListener != null) lotesRef.removeEventListener(lotesListener);
+        if (productosListener != null) productosRef.removeEventListener(productosListener);
         super.onDestroyView();
     }
 
