@@ -11,23 +11,33 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
+import com.google.android.material.chip.Chip;
+import com.google.android.material.chip.ChipGroup;
 import com.google.firebase.database.*;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class VentaFragment extends Fragment {
 
-    Spinner spinnerProducto, spinnerPago, spinnerLote;
-    EditText etCantidad, etNombre, etMontoParcial;
+    // Clientes frecuentes: se cuentan en las últimas ventas y se sugieren los primeros.
+    private static final int MAX_VENTAS_CLIENTES = 500;
+    private static final int MAX_CLIENTES = 100;
+
+    Spinner spinnerPago, spinnerLote;
+    ChipGroup chipsProducto;
+    EditText etCantidad, etMontoParcial;
+    AutoCompleteTextView etNombre;
     TextView tvStock, tvMensaje, tvTotal;
-    Button btnRegistrar;
+    Button btnRegistrar, btnMenos, btnMas;
 
     DatabaseReference productosRef, ventasRef;
     Map<String, Producto> productoMap = new LinkedHashMap<>();
-    List<String> productoNombres = new ArrayList<>();
-    List<String> productoIds = new ArrayList<>();
-    ArrayAdapter<String> productoAdapter;
+    String productoElegidoId; // id en productos/ del chip marcado
+    boolean armandoChips; // mientras se rehacen los chips, los cambios de selección no son del usuario
     ValueEventListener productosListener;
+
+    Query ventasRecientes;
+    ValueEventListener clientesListener;
 
     // Lotes abiertos (FIFO): las bolsas de 1/2 y 1/4 kg se descuentan del lote elegido.
     DatabaseReference lotesRef;
@@ -42,7 +52,7 @@ public class VentaFragment extends Fragment {
 
         View view = inflater.inflate(R.layout.activity_venta, container, false);
 
-        spinnerProducto = view.findViewById(R.id.spinnerProducto);
+        chipsProducto = view.findViewById(R.id.chipsProducto);
         spinnerPago = view.findViewById(R.id.spinnerPago);
         spinnerLote = view.findViewById(R.id.spinnerLote);
         etCantidad = view.findViewById(R.id.etCantidad);
@@ -52,6 +62,8 @@ public class VentaFragment extends Fragment {
         tvMensaje = view.findViewById(R.id.tvMensaje);
         tvTotal = view.findViewById(R.id.tvTotal);
         btnRegistrar = view.findViewById(R.id.btnRegistrar);
+        btnMenos = view.findViewById(R.id.btnMenos);
+        btnMas = view.findViewById(R.id.btnMas);
 
         productosRef = FirebaseDatabase.getInstance().getReference("productos");
         ventasRef = FirebaseDatabase.getInstance().getReference("ventas");
@@ -74,42 +86,31 @@ public class VentaFragment extends Fragment {
             public void onNothingSelected(AdapterView<?> parent) {}
         });
 
-        // Spinner de productos
-        productoAdapter = new ArrayAdapter<>(requireContext(),
-                android.R.layout.simple_spinner_item, productoNombres);
-        productoAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinnerProducto.setAdapter(productoAdapter);
-
-        spinnerProducto.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                // Otra bolsa puede salir de otro lote (FIFO) y cambia el total.
-                elegirLote();
-                calcularTotal();
-            }
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {}
+        // Chips de productos (uno marcado siempre: selectionRequired en el layout)
+        chipsProducto.setOnCheckedStateChangeListener((group, checkedIds) -> {
+            if (armandoChips || checkedIds.isEmpty()) return;
+            Chip chip = group.findViewById(checkedIds.get(0));
+            if (chip == null) return;
+            productoElegidoId = (String) chip.getTag();
+            // Otra bolsa puede salir de otro lote (FIFO) y cambia el total.
+            elegirLote();
+            calcularTotal();
         });
 
         productosListener = productosRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 productoMap.clear();
-                productoNombres.clear();
-                productoIds.clear();
 
                 for (DataSnapshot ds : snapshot.getChildren()) {
                     Producto p = ds.getValue(Producto.class);
                     if (p != null) {
                         if (p.id == null) p.id = ds.getKey();
                         productoMap.put(p.id, p);
-                        productoNombres.add(PrecioCalculator.etiqueta(p.nombre, p.precio, p.ofertaCantidad, p.ofertaPrecio));
-                        productoIds.add(p.id);
                     }
                 }
 
-                productoAdapter.notifyDataSetChanged();
-
+                mostrarChips();
                 elegirLote();
                 // Si el precio cambió en Firebase, el total en pantalla se actualiza solo.
                 calcularTotal();
@@ -162,6 +163,33 @@ public class VentaFragment extends Fragment {
             }
         });
 
+        // Stepper de cantidad: el TextWatcher de abajo recalcula el total.
+        btnMenos.setOnClickListener(v -> cambiarCantidad(-1));
+        btnMas.setOnClickListener(v -> cambiarCantidad(1));
+
+        // Autocompletado del cliente con los que más compran (índice en fecha: database.rules.json).
+        ventasRecientes = ventasRef.orderByChild("fecha").limitToLast(MAX_VENTAS_CLIENTES);
+        clientesListener = ventasRecientes.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (getView() == null) return;
+                List<Venta> ventas = new ArrayList<>();
+                for (DataSnapshot ds : snapshot.getChildren()) {
+                    Venta v = ds.getValue(Venta.class);
+                    if (v != null) ventas.add(v);
+                }
+                ArrayAdapter<String> clientes = new ArrayAdapter<>(etNombre.getContext(),
+                        android.R.layout.simple_dropdown_item_1line,
+                        VentaRapida.clientesFrecuentes(ventas, MAX_CLIENTES));
+                etNombre.setAdapter(clientes);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                // Sin sugerencias el nombre se sigue escribiendo a mano: no hace falta avisar.
+            }
+        });
+
         // Calcular total automáticamente
         etCantidad.addTextChangedListener(new android.text.TextWatcher() {
             @Override
@@ -184,7 +212,36 @@ public class VentaFragment extends Fragment {
         // Cada cambio de pestaña crea un fragment nuevo: sin esto los listeners se acumulan.
         if (productosListener != null) productosRef.removeEventListener(productosListener);
         if (lotesListener != null) lotesRef.removeEventListener(lotesListener);
+        if (clientesListener != null) ventasRecientes.removeEventListener(clientesListener);
         super.onDestroyView();
+    }
+
+    /**
+     * Un chip por producto con su precio de Firebase. Queda marcada la bolsa que ya estaba elegida
+     * o, si no, la de 1/2 kg (VentaRapida.productoInicial).
+     */
+    private void mostrarChips() {
+        productoElegidoId = VentaRapida.productoInicial(productoMap.keySet(), productoElegidoId);
+        armandoChips = true;
+        chipsProducto.removeAllViews();
+        LayoutInflater inflater = LayoutInflater.from(chipsProducto.getContext());
+        int idMarcado = View.NO_ID;
+        for (Producto p : productoMap.values()) {
+            Chip chip = (Chip) inflater.inflate(R.layout.chip_producto, chipsProducto, false);
+            chip.setId(View.generateViewId());
+            chip.setTag(p.id);
+            chip.setText(VentaRapida.etiquetaChip(p.nombre, p.precio, p.ofertaCantidad, p.ofertaPrecio));
+            chipsProducto.addView(chip);
+            if (p.id.equals(productoElegidoId)) idMarcado = chip.getId();
+        }
+        if (idMarcado != View.NO_ID) chipsProducto.check(idMarcado);
+        armandoChips = false;
+    }
+
+    /** − y + del stepper: nunca deja la cantidad en menos de 1. */
+    private void cambiarCantidad(int delta) {
+        etCantidad.setText(String.valueOf(VentaRapida.sumar(etCantidad.getText().toString(), delta)));
+        etCantidad.setSelection(etCantidad.length());
     }
 
     /**
@@ -260,22 +317,17 @@ public class VentaFragment extends Fragment {
 
     @Nullable
     private Producto productoSeleccionado() {
-        int pos = spinnerProducto.getSelectedItemPosition();
-        if (pos < 0 || pos >= productoIds.size()) return null;
-        return productoMap.get(productoIds.get(pos));
+        return (productoElegidoId == null) ? null : productoMap.get(productoElegidoId);
     }
 
     private void registrarVenta() {
 
-        int pos = spinnerProducto.getSelectedItemPosition();
-        if (pos < 0 || pos >= productoIds.size()) {
-            Toast.makeText(requireContext(), "Selecciona un producto", Toast.LENGTH_SHORT).show();
+        Producto p = productoSeleccionado();
+        if (p == null) {
+            Toast.makeText(requireContext(), "Elige una bolsa", Toast.LENGTH_SHORT).show();
             return;
         }
-
-        String pid = productoIds.get(pos);
-        Producto p = productoMap.get(pid);
-        if (p == null) return;
+        String pid = p.id;
 
         String cantidadStr = etCantidad.getText().toString().trim();
         if (cantidadStr.isEmpty()) {
@@ -405,10 +457,9 @@ public class VentaFragment extends Fragment {
                             Toast.makeText(appCtx, "Venta registrada. Total " + PrecioCalculator.formatear(total) + avisoStock,
                                     Toast.LENGTH_LONG).show();
                             if (getView() == null) return; // la pestaña ya se cerró
-                            etCantidad.setText("");
+                            etCantidad.setText("1"); // el TextWatcher recalcula el total
                             etNombre.setText("");
                             etMontoParcial.setText("");
-                            tvTotal.setText("Total: S/ 0.00");
                         })
                         .addOnFailureListener(e ->
                                 Toast.makeText(appCtx, "Error guardando venta: " + e.getMessage(), Toast.LENGTH_SHORT).show()
