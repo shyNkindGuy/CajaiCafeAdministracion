@@ -47,7 +47,7 @@ Leyenda: `[ ]` pendiente · `[x]` hecha (se marca dentro del PR que la resuelve)
 - [x] **3.3 Alerta de stock bajo** por lote (umbral configurable).
 
 ## Fase 4 — Rediseño UI/UX
-- [ ] **4.1 Tema Material 3 con colores de marca** (café/crema), modo oscuro, tipografía.
+- [x] **4.1 Tema Material 3 con colores de marca** (café/crema), modo oscuro, tipografía.
 - [ ] **4.2 Venta rápida**: chips de producto con precio, stepper de cantidad, cliente con
   autocompletado de clientes frecuentes.
 - [ ] **4.3 Navegación final**: Inicio · Vender · Lotes · Movimientos · Más.

@@ -34,7 +34,7 @@
         android:id="@+id/tvFechaLote"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textColor="#777777"
+        android:textColor="@color/textoSecundario"
         android:text="Inicio: 2025-11-17" />
 
     <TextView

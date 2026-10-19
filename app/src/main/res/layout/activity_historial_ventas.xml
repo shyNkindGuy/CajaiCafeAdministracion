@@ -7,11 +7,11 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:padding="16dp"
-    android:background="#FAFAFA">
+    android:background="@color/fondo">
 
     <TextView
         android:text="📊 Historial de Ventas"
-        android:textSize="22sp"
+        android:textColor="@color/textoMarca" android:fontFamily="serif" android:textSize="22sp"
         android:textStyle="bold"
         android:gravity="center"
         android:layout_width="match_parent"

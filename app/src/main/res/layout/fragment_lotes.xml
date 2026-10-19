@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FAFAFA">
+    android:background="@color/fondo">
 
     <TextView
         android:id="@+id/tvTituloLotes"
@@ -11,8 +11,8 @@
         android:layout_height="wrap_content"
         android:padding="16dp"
         android:text="Lotes"
-        android:textColor="@color/cafeOscuro"
-        android:textSize="24sp"
+        android:textColor="@color/textoMarca"
+        android:fontFamily="serif" android:textSize="24sp"
         android:textStyle="bold" />
 
     <androidx.recyclerview.widget.RecyclerView

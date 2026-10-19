@@ -3,7 +3,6 @@ package com.example.cajaicafeadministracion;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
 import android.text.InputType;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -18,6 +17,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import com.google.firebase.database.*;
 
@@ -202,7 +202,8 @@ public class InicioFragment extends Fragment {
 
         ResumenFinanciero r = ResumenFinanciero.delMes(mesElegido, ventas, gastos, lotes, nombrePorId);
         tvUtilidad.setText(PrecioCalculator.formatear(r.utilidadNeta));
-        tvUtilidad.setTextColor(r.utilidadNeta < 0 ? Color.parseColor("#C62828") : Color.parseColor("#2E7D32"));
+        tvUtilidad.setTextColor(ContextCompat.getColor(tvUtilidad.getContext(),
+                r.utilidadNeta < 0 ? R.color.negativo : R.color.positivo));
         tvMargen.setText(ResumenFinanciero.textoMargen(r.margen()));
 
         tvIngresos.setText("Ventas registradas (" + r.ventas + "): " + PrecioCalculator.formatear(r.ingresos));
@@ -307,7 +308,7 @@ public class InicioFragment extends Fragment {
             ResumenFinanciero.Equilibrio e = ResumenFinanciero.equilibrio(l, ventas, gastos, precioBolsa);
             TextView fila = new TextView(contenedorLotes.getContext());
             fila.setText(ResumenFinanciero.textoEquilibrio(l.codigo, e, precioBolsa));
-            fila.setTextColor(e.recuperado() ? Color.parseColor("#2E7D32") : Color.parseColor("#5D4037"));
+            fila.setTextColor(ContextCompat.getColor(fila.getContext(), e.recuperado() ? R.color.positivo : R.color.textoMarca));
             fila.setPadding(0, padding, 0, padding);
             contenedorLotes.addView(fila);
         }

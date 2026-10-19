@@ -2,7 +2,7 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FAFAFA"
+    android:background="@color/fondo"
     android:padding="16dp">
 
     <LinearLayout
@@ -12,9 +12,9 @@
 
         <TextView
             android:text="Cuentas por cobrar"
-            android:textSize="24sp"
+            android:fontFamily="serif" android:textSize="24sp"
             android:textStyle="bold"
-            android:textColor="@color/cafeOscuro"
+            android:textColor="@color/textoMarca"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 
@@ -23,7 +23,7 @@
             android:text="Total por cobrar: S/ 0.00"
             android:textSize="18sp"
             android:textStyle="bold"
-            android:textColor="#C62828"
+            android:textColor="@color/negativo"
             android:layout_marginTop="4dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
@@ -31,7 +31,7 @@
         <TextView
             android:text="Todas las ventas pendientes o con pago parcial, de la más antigua a la más nueva. El pago se registra en Historial (botón editar)."
             android:textSize="12sp"
-            android:textColor="#757575"
+            android:textColor="@color/textoSecundario"
             android:layout_marginBottom="8dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
@@ -39,7 +39,7 @@
         <TextView
             android:id="@+id/tvSinCuentas"
             android:text="Nadie te debe nada."
-            android:textColor="#2E7D32"
+            android:textColor="@color/positivo"
             android:visibility="gone"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />

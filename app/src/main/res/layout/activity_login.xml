@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#F9F4EE"
+    android:background="@color/fondo"
     android:fillViewport="true">
 
     <LinearLayout
@@ -24,8 +24,8 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:text="Cajai Café"
-            android:textColor="#3E2723"
-            android:textSize="26sp"
+            android:textColor="@color/textoMarca"
+            android:fontFamily="serif" android:textSize="26sp"
             android:textStyle="bold" />
 
         <TextView
@@ -33,7 +33,7 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="24dp"
             android:text="Ingresa con tu cuenta"
-            android:textColor="#6D4C41"
+            android:textColor="@color/textoMarca"
             android:textSize="16sp" />
 
         <com.google.android.material.textfield.TextInputLayout
@@ -41,9 +41,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="Correo"
-            android:textColorHint="#6D4C41"
-            app:boxStrokeColor="#5D4037"
-            app:hintTextColor="#5D4037">
+            android:textColorHint="@color/textoSecundario"
+            app:boxStrokeColor="@color/textoMarca"
+            app:hintTextColor="@color/textoMarca">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/etCorreo"
@@ -51,7 +51,7 @@
                 android:layout_height="wrap_content"
                 android:autofillHints="emailAddress"
                 android:inputType="textEmailAddress"
-                android:textColor="#2B1F1D" />
+                android:textColor="@color/texto" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
@@ -60,11 +60,11 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
             android:hint="Contraseña"
-            android:textColorHint="#6D4C41"
-            app:boxStrokeColor="#5D4037"
+            android:textColorHint="@color/textoSecundario"
+            app:boxStrokeColor="@color/textoMarca"
             app:endIconMode="password_toggle"
-            app:endIconTint="#5D4037"
-            app:hintTextColor="#5D4037">
+            app:endIconTint="@color/textoMarca"
+            app:hintTextColor="@color/textoMarca">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/etContrasena"
@@ -72,7 +72,7 @@
                 android:layout_height="wrap_content"
                 android:autofillHints="password"
                 android:inputType="textPassword"
-                android:textColor="#2B1F1D" />
+                android:textColor="@color/texto" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <TextView
@@ -80,7 +80,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
-            android:textColor="#C62828"
+            android:textColor="@color/negativo"
             android:textIsSelectable="true"
             android:textSize="14sp"
             android:visibility="gone" />
@@ -90,7 +90,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:backgroundTint="#5D4037"
+            android:backgroundTint="@color/cafeOscuro"
             android:minHeight="52dp"
             android:text="Ingresar"
             android:textColor="#FFFFFF" />
@@ -111,6 +111,6 @@
             android:gravity="center"
             android:padding="8dp"
             android:text="¿Olvidaste tu contraseña?"
-            android:textColor="#6D4C41" />
+            android:textColor="@color/textoMarca" />
     </LinearLayout>
 </ScrollView>

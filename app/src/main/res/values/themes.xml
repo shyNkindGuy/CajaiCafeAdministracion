@@ -1,8 +1,26 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Base application theme. -->
+    <!--
+      Tema Material 3 con los colores de marca (tarea 4.1). DayNight: los mismos nombres de color
+      toman su versión oscura de values-night/colors.xml, así que no hace falta otro tema para la noche.
+    -->
     <style name="Base.Theme.CajaiCafeAdministracion" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Customize your light theme here. -->
-        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+        <item name="colorPrimary">@color/marcaPrimario</item>
+        <item name="colorOnPrimary">@color/marcaSobrePrimario</item>
+        <item name="colorPrimaryContainer">@color/marcaContenedor</item>
+        <item name="colorOnPrimaryContainer">@color/marcaSobreContenedor</item>
+        <item name="colorSecondary">@color/marcaSecundario</item>
+        <item name="colorOnSecondary">@color/marcaSobrePrimario</item>
+        <item name="colorTertiary">@color/positivo</item>
+        <item name="android:colorBackground">@color/fondo</item>
+        <item name="colorOnBackground">@color/texto</item>
+        <item name="colorSurface">@color/superficie</item>
+        <item name="colorOnSurface">@color/texto</item>
+        <item name="colorOnSurfaceVariant">@color/textoSecundario</item>
+        <item name="colorOutline">@color/borde</item>
+        <!-- Barras del sistema en café oscuro con íconos claros, en los dos modos. -->
+        <item name="android:statusBarColor">@color/cafeProfundo</item>
+        <item name="android:navigationBarColor">@color/cafeProfundo</item>
+        <item name="android:windowLightStatusBar">false</item>
     </style>
 
     <style name="Theme.CajaiCafeAdministracion" parent="Base.Theme.CajaiCafeAdministracion" />
