@@ -53,4 +53,4 @@ Leyenda: `[ ]` pendiente · `[x]` hecha (se marca dentro del PR que la resuelve)
 - [x] **4.3 Navegación final**: Inicio · Vender · Lotes · Movimientos · Más.
 
 ## Fase 5 — Web (después, producto aparte)
-- [ ] **5.1 cajaicafe.me en Cloudflare Pages**: catálogo, precios y botón de pedido por WhatsApp.
+- [x] **5.1 cajaicafe.me en Cloudflare Pages**: catálogo, precios y botón de pedido por WhatsApp.

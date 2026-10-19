@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="es-PE">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="color-scheme" content="light">
+  <meta name="theme-color" content="#F2E8D8">
+  <title>Cajai Café · Café de Chanchamayo</title>
+  <meta name="description" content="Café de finca de Chanchamayo, cultivado bajo sombra. Tostado y molido, en bolsas de 250 g y 500 g. Pide por WhatsApp.">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Cajai Café · Una historia de sabor en cada taza">
+  <meta property="og:description" content="Café de finca de Chanchamayo, tostado y molido. Pide por WhatsApp.">
+  <meta property="og:image" content="https://cajaicafe.me/img/logo.png">
+  <meta property="og:url" content="https://cajaicafe.me/">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alegreya:ital,wght@0,400;0,500;0,700;1,400&family=Alegreya+Sans:wght@400;500;700&display=swap">
+  <link rel="stylesheet" href="estilos.css">
+</head>
+<body>
+  <header class="portada">
+    <p class="origen aparece">Junín · Chanchamayo · Perú</p>
+    <h1 class="logo aparece">
+      <img src="img/logo.png" alt="Cajai Café" width="1000" height="502">
+    </h1>
+    <p class="eslogan aparece">Una historia de sabor en cada taza</p>
+    <p class="bajada aparece">
+      Café de finca, cultivado bajo sombra en la selva central del Perú.
+      Tostado y molido, en bolsas con cierre y válvula.
+    </p>
+    <a class="ir-catalogo aparece" href="#catalogo">Ver las bolsas y precios</a>
+  </header>
+
+  <main>
+    <section id="catalogo" class="catalogo" aria-labelledby="tituloCatalogo">
+      <h2 id="tituloCatalogo">Elige tus bolsas</h2>
+      <p class="nota">Café tostado molido. Precios en soles.</p>
+      <div id="bolsas" class="bolsas"></div>
+      <p id="avisoPrecios" class="aviso-precios" hidden>
+        No pudimos cargar los precios en este momento. Igual puedes armar tu pedido: te confirmamos el total por WhatsApp.
+      </p>
+    </section>
+
+    <section class="como-pedir" aria-labelledby="tituloComoPedir">
+      <h2 id="tituloComoPedir">Cómo pedir</h2>
+      <ol class="pasos">
+        <li><span class="paso-numero">1</span><span>Elige tus bolsas y cuántas quieres.</span></li>
+        <li><span class="paso-numero">2</span><span>Toca <strong>Pedir por WhatsApp</strong>: el mensaje se escribe solo.</span></li>
+        <li><span class="paso-numero">3</span><span>Te respondemos para coordinar la entrega y el pago.</span></li>
+      </ol>
+    </section>
+  </main>
+
+  <footer class="pie">
+    <img class="pie-logo" src="img/logo.png" alt="" width="1000" height="502" loading="lazy">
+    <p>Cajai Café · Junín, Chanchamayo, Perú</p>
+    <p>WhatsApp <a href="https://wa.me/51991538843">991 538 843</a></p>
+    <p class="pie-nota">El total del pedido se confirma por WhatsApp.</p>
+  </footer>
+
+  <div class="barra-pedido" role="region" aria-label="Tu pedido">
+    <div class="barra-contenido">
+      <p id="resumenPedido" class="resumen-pedido" aria-live="polite">Elige tus bolsas arriba.</p>
+      <a id="botonPedir" class="boton-whatsapp" target="_blank" rel="noopener"
+         href="https://wa.me/51991538843?text=Hola%2C%20Cajai%20Caf%C3%A9.%20Quiero%20informaci%C3%B3n%20sobre%20su%20caf%C3%A9.">Escríbenos por WhatsApp</a>
+    </div>
+  </div>
+
+  <template id="plantillaBolsa">
+    <article class="bolsa">
+      <p class="bolsa-tipo">Tostado molido</p>
+      <p class="bolsa-peso"></p>
+      <h3 class="bolsa-nombre"></h3>
+      <p class="bolsa-descripcion"></p>
+      <div class="bolsa-precios">
+        <p class="bolsa-precio"></p>
+        <p class="bolsa-oferta" hidden></p>
+      </div>
+      <div class="stepper">
+        <button type="button" class="menos">−</button>
+        <output class="cantidad">0</output>
+        <button type="button" class="mas">+</button>
+      </div>
+    </article>
+  </template>
+
+  <script type="module" src="app.js"></script>
+</body>
+</html>

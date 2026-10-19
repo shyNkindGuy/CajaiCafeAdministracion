@@ -10,7 +10,12 @@
     },
     "productos": {
       ".read": "auth != null && root.child('usuarios').child(auth.uid).val() === true",
-      ".write": "auth != null && root.child('usuarios').child(auth.uid).val() === true"
+      ".write": "auth != null && root.child('usuarios').child(auth.uid).val() === true",
+      "$id": {
+        "precio": { ".read": true },
+        "ofertaCantidad": { ".read": true },
+        "ofertaPrecio": { ".read": true }
+      }
     },
     "ventas": {
       ".read": "auth != null && root.child('usuarios').child(auth.uid).val() === true",

@@ -77,8 +77,19 @@ Convención: todo `addValueEventListener` guarda el listener en un campo y se qu
 `onDestroyView` (fragments) u `onDestroy` (activities). En callbacks asíncronos no usar
 `requireContext()`: usar el contexto de la app capturado antes, y `getView() != null` antes de tocar vistas.
 
+## Web (cajaicafe.me, 5.1)
+Página estática en `web/sitio` (HTML + CSS + JS sin build) que publica **Cloudflare Pages** (output
+directory `web/sitio`; pasos en `web/README.md`). Catálogo de las bolsas de `web/sitio/config.js` (id de
+producto, nombre, peso, texto) con los **precios leídos en vivo de Firebase** por REST
+(`productos/{id}/precio|ofertaCantidad|ofertaPrecio.json`), y un botón que abre WhatsApp (991 538 843,
+el oficial) con el pedido ya escrito. El total sigue la regla de `PrecioCalculator` en
+`web/sitio/tienda.js` (con tests en `web/tienda.test.mjs`, que corre `.github/workflows/web-ci.yml`). Sin
+precio legible, la bolsa dice "Precio por WhatsApp" y el total va "por confirmar". Marca: logo del dueño
+tal cual (`img/logo.png`), eslogan "Una historia de sabor en cada taza", origen Junín – Chanchamayo;
+**nunca decir "orgánico"** (no hay certificación). `_headers` lleva la CSP (Firebase y Google Fonts).
+
 ## Nodos de Firebase
-- `productos/{id}`: `nombre, precio, stock`, y opcional `ofertaCantidad, ofertaPrecio` y `costoBolsa, costoSticker` (empaque por unidad, para el costo por bolsa del lote) y `stockMinimo` (aviso de stock bajo) (catálogo global)
+- `productos/{id}`: `nombre, precio, stock`, y opcional `ofertaCantidad, ofertaPrecio` y `costoBolsa, costoSticker` (empaque por unidad, para el costo por bolsa del lote) y `stockMinimo` (aviso de stock bajo) (catálogo global). Las reglas dejan leer **sin cuenta** solo `precio`, `ofertaCantidad` y `ofertaPrecio` de cada producto (para la web); el resto sigue pidiendo estar en `usuarios/`
 - `ventas/{id}`: `fecha, producto, cliente, precioUnitario, cantidad, estadoPago (pagado|parcial|pendiente), montoParcial, total, loteId, productoId`
 - `lotes/{id}`: costos (pergamino/pilado/tostado kg×precio, flete, electricidad kW×h×S//kWh, empaque), `totalGastos`, `stockBolsas12`, `stockBolsas14`, `estado (abierto|cerrado)`
 - `usuarios/{uid}`: `true` para cada cuenta autorizada (solo se edita desde la consola)
@@ -93,6 +104,7 @@ Convención: todo `addValueEventListener` guarda el listener en un campo y se qu
 ```bash
 ./gradlew assembleDebug        # APK en app/build/outputs/apk/debug/
 ./gradlew testDebugUnitTest
+cd web && node --test tienda.test.mjs   # tests de la web
 ```
 El contenedor en la nube de Claude no tiene Android SDK (dl.google.com bloqueado): la validación
 real es el workflow `.github/workflows/android-ci.yml` en cada PR.

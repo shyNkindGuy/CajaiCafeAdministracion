@@ -1,0 +1,8 @@
+{
+  "name": "cajai-cafe-web",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node --test tienda.test.mjs"
+  }
+}

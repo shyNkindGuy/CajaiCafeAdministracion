@@ -1,0 +1,7 @@
+# Cabeceras de Cloudflare Pages (no se publica como página).
+# connect-src: la Realtime Database de Firebase, de donde app.js lee los precios.
+/*
+  Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; connect-src https://*.firebaseio.com https://*.firebasedatabase.app; base-uri 'self'; form-action 'none'; frame-ancestors 'none'; object-src 'none'
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: camera=(), microphone=(), geolocation=()

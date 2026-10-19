@@ -1,0 +1,27 @@
+name: Web CI
+
+# Prueba la lógica de la tienda web (web/sitio/tienda.js) en cada PR que toque web/.
+# La web la publica Cloudflare Pages directo desde web/sitio (sin paso de build).
+
+on:
+  pull_request:
+    paths: ['web/**', '.github/workflows/web-ci.yml']
+  push:
+    branches: [master]
+    paths: ['web/**', '.github/workflows/web-ci.yml']
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Tests de la tienda
+        working-directory: web
+        run: node --test tienda.test.mjs
