@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+/** Pestaña Más: totales de siempre, cuentas por cobrar, registrar gasto, reportes PDF/CSV y cerrar sesión. */
 public class DashboardFragment extends Fragment {
 
     TextView tvTotalMedio, tvTotalCuarto, tvTotalDinero;
@@ -69,6 +70,8 @@ public class DashboardFragment extends Fragment {
         ((RadioGroup) view.findViewById(R.id.rgTipoReporte)).setOnCheckedChangeListener((g, id) -> actualizarOpcionesReporte());
         btnExportar.setOnClickListener(v -> generarPDF());
         view.findViewById(R.id.btnExportarCSV).setOnClickListener(v -> exportarCsv());
+        view.findViewById(R.id.btnCuentasPorCobrarMas).setOnClickListener(v ->
+                startActivity(new Intent(requireContext(), CuentasPorCobrarActivity.class)));
         view.findViewById(R.id.btnRegistrarGasto).setOnClickListener(v ->
                 startActivity(new Intent(requireContext(), GastoActivity.class)));
 

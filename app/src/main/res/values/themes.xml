@@ -27,4 +27,16 @@
     </style>
 
     <style name="Theme.CajaiCafeAdministracion" parent="Base.Theme.CajaiCafeAdministracion" />
+
+    <!-- Barra de abajo (4.3). Con 5 pestañas, "Movimientos" no entra con la letra de Material 3. -->
+    <style name="TextoBarraNavegacion" parent="TextAppearance.Material3.LabelSmall">
+        <item name="android:textSize">11sp</item>
+        <item name="android:letterSpacing">0</item>
+    </style>
+
+    <!-- Píldora detrás del ícono elegido: café medio, para que el ícono blanco se vea (la crema de
+         colorSecondaryContainer casi no se distingue del blanco). -->
+    <style name="IndicadorBarraNavegacion" parent="Widget.Material3.BottomNavigationView.ActiveIndicator">
+        <item name="android:color">@color/cafeMedio</item>
+    </style>
 </resources>

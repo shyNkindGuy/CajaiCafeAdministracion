@@ -1,16 +1,12 @@
 package com.example.cajaicafeadministracion;
 
-import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.content.Context;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.LinearLayout;
 import android.widget.Spinner;
-import android.widget.TextView;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -22,31 +18,24 @@ import com.google.firebase.database.*;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 
-/** "Registrar gasto": gastos que no son del costeo de un costal (gastos/{id}) y lista de los últimos. */
+/**
+ * "Registrar gasto": gastos que no son del costeo de un costal (gastos/{id}). Al guardar vuelve a la
+ * pantalla de antes; la lista de gastos (y borrarlos) está en Movimientos → Gastos (GastosFragment).
+ */
 public class GastoActivity extends AppCompatActivity {
-
-    private static final int MAX_GASTOS_LISTA = 30;
 
     Spinner spinnerCategoria, spinnerLote;
     EditText etMonto, etNota;
     Button btnFecha;
-    LinearLayout contenedorGastos;
-    TextView tvSinGastos;
 
     DatabaseReference gastosRef, lotesRef;
-    Query ultimosGastos;
-    ValueEventListener lotesListener, gastosListener;
+    ValueEventListener lotesListener;
 
     // Opción 0 del selector de lote = gasto general; la opción i + 1 es lotesSelector.get(i).
     final List<Lote> lotesSelector = new ArrayList<>();
-    final Map<String, String> codigoPorLote = new HashMap<>();
-    final List<Gasto> ultimos = new ArrayList<>();
     // Día del gasto (por defecto hoy); la hora se toma al guardar.
     final Calendar fechaGasto = Calendar.getInstance();
 
@@ -60,8 +49,6 @@ public class GastoActivity extends AppCompatActivity {
         etMonto = findViewById(R.id.etMontoGasto);
         etNota = findViewById(R.id.etNotaGasto);
         btnFecha = findViewById(R.id.btnFechaGasto);
-        contenedorGastos = findViewById(R.id.contenedorGastos);
-        tvSinGastos = findViewById(R.id.tvSinGastos);
 
         List<String> categorias = new ArrayList<>();
         for (String c : ValidacionGasto.CATEGORIAS) categorias.add(ValidacionGasto.etiquetaCategoria(c));
@@ -77,13 +64,11 @@ public class GastoActivity extends AppCompatActivity {
         gastosRef = FirebaseDatabase.getInstance().getReference("gastos");
         lotesRef = FirebaseDatabase.getInstance().getReference("lotes");
         cargarLotes();
-        cargarUltimosGastos();
     }
 
     @Override
     protected void onDestroy() {
         if (lotesListener != null) lotesRef.removeEventListener(lotesListener);
-        if (gastosListener != null) ultimosGastos.removeEventListener(gastosListener);
         super.onDestroy();
     }
 
@@ -93,13 +78,11 @@ public class GastoActivity extends AppCompatActivity {
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 String elegido = loteSeleccionadoId();
                 lotesSelector.clear();
-                codigoPorLote.clear();
                 for (DataSnapshot ds : snapshot.getChildren()) {
                     Lote l = ds.getValue(Lote.class);
                     if (l == null) continue;
                     l.id = ds.getKey();
                     lotesSelector.add(l);
-                    codigoPorLote.put(l.id, l.codigo);
                 }
                 // El costal más reciente primero: es al que suele ir un gasto nuevo.
                 lotesSelector.sort((a, b) -> {
@@ -107,35 +90,11 @@ public class GastoActivity extends AppCompatActivity {
                     return porFecha != 0 ? porFecha : texto(b.id).compareTo(texto(a.id));
                 });
                 mostrarLotes(elegido);
-                pintarGastos();
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
                 Toast.makeText(GastoActivity.this, "Error cargando lotes: " + error.getMessage(), Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
-
-    private void cargarUltimosGastos() {
-        ultimosGastos = gastosRef.orderByChild("fecha").limitToLast(MAX_GASTOS_LISTA);
-        gastosListener = ultimosGastos.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                ultimos.clear();
-                for (DataSnapshot ds : snapshot.getChildren()) {
-                    Gasto g = ds.getValue(Gasto.class);
-                    if (g == null) continue;
-                    g.id = ds.getKey();
-                    ultimos.add(g);
-                }
-                Collections.reverse(ultimos); // el más reciente arriba
-                pintarGastos();
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                Toast.makeText(GastoActivity.this, "Error cargando gastos: " + error.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -161,23 +120,6 @@ public class GastoActivity extends AppCompatActivity {
         int pos = spinnerLote.getSelectedItemPosition() - 1;
         if (pos < 0 || pos >= lotesSelector.size()) return null;
         return lotesSelector.get(pos).id;
-    }
-
-    private void pintarGastos() {
-        contenedorGastos.removeAllViews();
-        tvSinGastos.setVisibility(ultimos.isEmpty() ? View.VISIBLE : View.GONE);
-        int padding = Math.round(10 * getResources().getDisplayMetrics().density);
-        for (Gasto g : ultimos) {
-            TextView fila = new TextView(this);
-            fila.setText(ValidacionGasto.etiqueta(g, g.loteId == null ? null : codigoPorLote.get(g.loteId)));
-            fila.setTextSize(14);
-            fila.setPadding(0, padding, 0, padding);
-            fila.setOnLongClickListener(v -> {
-                confirmarBorrado(g);
-                return true;
-            });
-            contenedorGastos.addView(fila);
-        }
     }
 
     private void elegirFecha() {
@@ -227,7 +169,7 @@ public class GastoActivity extends AppCompatActivity {
         Gasto gasto = new Gasto(id, fechaParaGuardar(), categoria, monto, nota.isEmpty() ? null : nota,
                 loteSeleccionadoId(), usuario.getUid());
 
-        // Se limpia ya: un segundo toque en "Guardar" no duplica el gasto (pide el monto otra vez).
+        // Se limpia ya: un segundo toque en "Guardar" antes de cerrar no duplica el gasto (pide el monto otra vez).
         etMonto.setText("");
         etNota.setText("");
 
@@ -239,20 +181,8 @@ public class GastoActivity extends AppCompatActivity {
                         Toast.makeText(appCtx, "Gasto registrado: " + resumen, Toast.LENGTH_SHORT).show())
                 .addOnFailureListener(e ->
                         Toast.makeText(appCtx, "No se guardó el gasto de " + resumen + ": " + e.getMessage(), Toast.LENGTH_LONG).show());
-    }
-
-    private void confirmarBorrado(Gasto g) {
-        new AlertDialog.Builder(this)
-                .setTitle("Borrar gasto")
-                .setMessage(ValidacionGasto.etiqueta(g, g.loteId == null ? null : codigoPorLote.get(g.loteId)))
-                .setPositiveButton("Borrar", (dialog, which) -> {
-                    final Context appCtx = getApplicationContext();
-                    gastosRef.child(g.id).removeValue()
-                            .addOnSuccessListener(unused -> Toast.makeText(appCtx, "Gasto borrado", Toast.LENGTH_SHORT).show())
-                            .addOnFailureListener(e -> Toast.makeText(appCtx, "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show());
-                })
-                .setNegativeButton("Cancelar", null)
-                .show();
+        // Firebase lo escribe primero en el celular (aunque no haya señal): en Movimientos → Gastos ya aparece.
+        finish();
     }
 
     private static String texto(String s) {

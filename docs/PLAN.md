@@ -50,7 +50,7 @@ Leyenda: `[ ]` pendiente · `[x]` hecha (se marca dentro del PR que la resuelve)
 - [x] **4.1 Tema Material 3 con colores de marca** (café/crema), modo oscuro, tipografía.
 - [x] **4.2 Venta rápida**: chips de producto con precio, stepper de cantidad, cliente con
   autocompletado de clientes frecuentes.
-- [ ] **4.3 Navegación final**: Inicio · Vender · Lotes · Movimientos · Más.
+- [x] **4.3 Navegación final**: Inicio · Vender · Lotes · Movimientos · Más.
 
 ## Fase 5 — Web (después, producto aparte)
 - [ ] **5.1 cajaicafe.me en Cloudflare Pages**: catálogo, precios y botón de pedido por WhatsApp.

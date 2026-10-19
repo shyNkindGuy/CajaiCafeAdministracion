@@ -12,13 +12,20 @@
         android:layout_height="wrap_content">
 
 
+        <!-- Pestaña Más (4.3): totales, atajos, reportes y la sesión. -->
         <TextView
-            android:text="Resumen de Ventas"
+            android:text="Más"
             android:fontFamily="serif" android:textSize="24sp"
             android:textStyle="bold"
             android:textColor="@color/textoMarca"
-            android:layout_marginBottom="16dp"
-            android:layout_height="match_parent"  android:layout_width="match_parent"/>
+            android:layout_height="wrap_content"  android:layout_width="match_parent"/>
+
+        <TextView
+            android:text="Bolsas vendidas y cobrado, de todas las fechas"
+            android:textSize="12sp"
+            android:textColor="@color/textoSecundario"
+            android:layout_marginBottom="12dp"
+            android:layout_height="wrap_content"  android:layout_width="match_parent"/>
 
         <LinearLayout
             android:orientation="horizontal"
@@ -102,10 +109,19 @@
         </androidx.cardview.widget.CardView>
 
         <Button
-            android:id="@+id/btnRegistrarGasto"
+            android:id="@+id/btnCuentasPorCobrarMas"
+            style="?attr/materialButtonOutlinedStyle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
+            android:textColor="@color/textoMarca"
+            android:text="Cuentas por cobrar" />
+
+        <Button
+            android:id="@+id/btnRegistrarGasto"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
             android:backgroundTint="@color/cafeMedio"
             android:textColor="#FFFFFF"
             android:text="Registrar gasto" />

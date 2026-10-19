@@ -20,6 +20,9 @@
         app:menu="@menu/bottom_nav_menu"
         app:itemIconTint="@color/selector_bottom_nav"
         app:itemTextColor="@color/selector_bottom_nav"
+        app:itemTextAppearanceActive="@style/TextoBarraNavegacion"
+        app:itemTextAppearanceInactive="@style/TextoBarraNavegacion"
+        app:itemActiveIndicatorStyle="@style/IndicadorBarraNavegacion"
         app:labelVisibilityMode="labeled"
         android:background="@color/cafeProfundo" />
 </LinearLayout>

@@ -66,32 +66,10 @@
         </androidx.cardview.widget.CardView>
 
         <TextView
-            android:text="Últimos gastos"
-            android:textStyle="bold"
-            android:textSize="18sp"
-            android:layout_marginTop="24dp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-        <TextView
-            android:text="Mantén presionado un gasto para borrarlo."
+            android:text="Los gastos registrados se ven (y se borran) en Movimientos → Gastos."
             android:textSize="12sp"
             android:textColor="@color/textoSecundario"
-            android:layout_marginBottom="8dp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-
-        <TextView
-            android:id="@+id/tvSinGastos"
-            android:text="Todavía no hay gastos registrados."
-            android:textColor="@color/textoSecundario"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-
-        <!-- Filas agregadas desde GastoActivity (pocas: los últimos gastos). Un ListView dentro de un
-             ScrollView solo mostraría una fila. -->
-        <LinearLayout
-            android:id="@+id/contenedorGastos"
-            android:orientation="vertical"
+            android:layout_marginTop="12dp"
             android:layout_marginBottom="24dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />

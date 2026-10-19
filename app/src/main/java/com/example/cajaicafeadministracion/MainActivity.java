@@ -30,15 +30,16 @@ public class MainActivity extends AppCompatActivity {
             Fragment selectedFragment = null;
 
             int itemId = item.getItemId();
+            // Inicio · Vender · Lotes · Movimientos (ventas y gastos) · Más (reportes, cuentas, sesión).
             if (itemId == R.id.nav_inicio) {
                 selectedFragment = new InicioFragment();
-            } else if (itemId == R.id.nav_venta) {
+            } else if (itemId == R.id.nav_vender) {
                 selectedFragment = new VentaFragment();
-            } else if (itemId == R.id.nav_historial) {
-                selectedFragment = new HistorialFragment();
             } else if (itemId == R.id.nav_lotes) {
                 selectedFragment = new LotesFragment();
-            } else if (itemId == R.id.nav_dashboard) {
+            } else if (itemId == R.id.nav_movimientos) {
+                selectedFragment = new MovimientosFragment();
+            } else if (itemId == R.id.nav_mas) {
                 selectedFragment = new DashboardFragment();
             }
 
