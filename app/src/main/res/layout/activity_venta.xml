@@ -16,8 +16,8 @@
             android:layout_gravity="center"
             android:layout_marginBottom="12dp"
             android:text="Registrar Venta"
-            android:textColor="#040404"
-            android:textSize="75px"
+            android:textColor="@color/textoMarca"
+            android:fontFamily="serif" android:textSize="24sp"
             android:textStyle="bold" />
 
 
@@ -26,7 +26,7 @@
             android:layout_height="match_parent"
             android:padding="16dp"
             card_view:contentPadding="20px"
-            android:backgroundTint="#FFFFFF"
+            android:backgroundTint="@color/superficie"
             card_view:cardCornerRadius="16dp"
             card_view:cardElevation="6dp">
 
@@ -41,22 +41,22 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
-                    android:textSize="16dp"
-                    android:textColor="#040404"
+                    android:textSize="16sp"
+                    android:textColor="@color/texto"
                     android:text="Bolsa" />
 
                 <Spinner
                     android:id="@+id/spinnerProducto"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textColor="#040404"
+                    android:textColor="@color/texto"
                     android:minHeight="55dp" />
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
-                    android:textSize="16dp"
-                    android:textColor="#040404"
+                    android:textSize="16sp"
+                    android:textColor="@color/texto"
                     android:text="Lote (costal)" />
                 <Spinner
                     android:id="@+id/spinnerLote"
@@ -67,45 +67,45 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
-                    android:textSize="16dp"
-                    android:textColor="#040404"
+                    android:textSize="16sp"
+                    android:textColor="@color/texto"
                     android:text="Cantidad" />
                 <EditText
                     android:id="@+id/etCantidad"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
-                    android:textColor="#040404"
+                    android:textColor="@color/texto"
                     android:inputType="number"
                     android:minHeight="55dp" />
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
-                    android:textSize="16dp"
-                    android:textColor="#040404"
+                    android:textSize="16sp"
+                    android:textColor="@color/texto"
                     android:text="Nombre Comprador" />
                 <EditText
                     android:id="@+id/etNombre"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
-                    android:textColor="#040404"
+                    android:textColor="@color/texto"
                     android:minHeight="55dp" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
-                    android:textSize="16dp"
-                    android:textColor="#040404"
+                    android:textSize="16sp"
+                    android:textColor="@color/texto"
                     android:text="Estado de pago" />
 
                 <Spinner
                     android:id="@+id/spinnerPago"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textColor="#040404"
+                    android:textColor="@color/texto"
                     android:minHeight="55dp" />
 
                 <EditText
@@ -115,7 +115,7 @@
                     android:layout_marginTop="8dp"
                     android:hint="Monto parcial (si aplica)"
                     android:inputType="numberDecimal"
-                    android:textColor="#040404"
+                    android:textColor="@color/texto"
                     android:visibility="gone" />
 
                 <TextView
@@ -125,8 +125,8 @@
                     android:layout_marginBottom="12dp"
                     android:layout_marginTop="12dp"
                     android:text="Stock disponible: -"
-                    android:textColor="#4D4A4A"
-                    android:textSize="16dp"/>
+                    android:textColor="@color/textoSecundario"
+                    android:textSize="16sp"/>
 
                 <TextView
                     android:id="@+id/tvTotal"
@@ -135,8 +135,8 @@
                     android:layout_marginTop="12dp"
                     android:layout_gravity="center"
                     android:text="Total: S/ 0.00"
-                    android:textSize="20dp"
-                    android:textColor="#040404"
+                    android:textSize="20sp"
+                    android:textColor="@color/texto"
                     android:textStyle="bold" />
 
                 <Button
@@ -145,10 +145,10 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:layout_marginTop="20dp"
-                    android:backgroundTint="#FFB507"
+                    android:backgroundTint="@color/cafeMedio"
                     android:text="REGISTRAR VENTA"
                     android:textColor="#FFFFFF"
-                    android:textSize="17dp" />
+                    android:textSize="17sp" />
 
                 <TextView
                     android:id="@+id/tvMensaje"

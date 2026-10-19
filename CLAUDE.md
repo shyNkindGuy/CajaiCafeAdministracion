@@ -65,6 +65,13 @@ tests): un lote abierto avisa cuando le quedan `stockMinimo` bolsas o menos de u
 `productos/medio_kilo|cuarto_kilo/stockMinimo`; sin configurar = 5, 0 = sin aviso). Se ve en Inicio
 (tarjeta naranja + botón para cambiar el umbral), en la lista de Lotes (en rojo) y al vender (Toast).
 
+Tema (4.1): Material 3 DayNight en `values/themes.xml` con los colores de marca (café sobre crema). En
+los layouts **no se escriben colores hexadecimales**: se usan los nombres de `values/colors.xml` (`fondo`,
+`superficie`, `texto`, `textoSecundario`, `textoMarca`, `tarjeta*`, `positivo`, `negativo`, `aviso`,
+`estado*`), que tienen su versión oscura en `values-night/colors.xml`; en Java, `ContextCompat.getColor`.
+`cafeOscuro`/`cafeMedio` son relleno de botones con texto blanco (iguales en los dos modos). Títulos de
+pantalla en `serif` y tamaños de texto en `sp`. La paleta y la fuente finales las decide el dueño.
+
 Convención: todo `addValueEventListener` guarda el listener en un campo y se quita en
 `onDestroyView` (fragments) u `onDestroy` (activities). En callbacks asíncronos no usar
 `requireContext()`: usar el contexto de la app capturado antes, y `getView() != null` antes de tocar vistas.

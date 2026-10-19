@@ -1,11 +1,47 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+  Paleta de Cajai Café (tarea 4.1). En los layouts no se escriben colores en hexadecimal: se usan
+  estos nombres, que tienen su versión oscura en values-night/colors.xml.
+  Marca: café (cafeOscuro / cafeMedio / cafeProfundo) sobre crema.
+-->
 <resources>
+    <!-- Marca: iguales en modo claro y oscuro (botones con texto blanco, barra de abajo). -->
     <color name="cafeOscuro">#5B4442</color>
     <color name="cafeMedio">#6D4C41</color>
+    <color name="cafeProfundo">#3E2723</color>
     <color name="crema">#F9F4EE</color>
     <color name="navbar_selector">@color/common_google_signin_btn_text_dark_default</color>
 
-    <color name="estadoPagado">#4CAF50</color>
-    <color name="estadoParcial">#FFEB3B</color>
-    <color name="estadoPendiente">#F44336</color>
+    <!-- Roles del tema Material 3 (themes.xml). -->
+    <color name="marcaPrimario">#6D4C41</color>
+    <color name="marcaSobrePrimario">#FFFFFF</color>
+    <color name="marcaContenedor">#F3E3D8</color>
+    <color name="marcaSobreContenedor">#2B1F1D</color>
+    <color name="marcaSecundario">#8D6E63</color>
+
+    <!-- Fondos y textos. -->
+    <color name="fondo">#F9F4EE</color>
+    <color name="superficie">#FFFFFF</color>
+    <color name="superficieSuave">#FBF8F5</color>
+    <color name="borde">#D7CCC8</color>
+    <color name="texto">#2B1F1D</color>
+    <color name="textoSecundario">#6F625C</color>
+    <color name="textoMarca">#5B4442</color>
+
+    <!-- Tarjetas de color suave (resúmenes). -->
+    <color name="tarjetaVerde">#E8F5E9</color>
+    <color name="tarjetaNaranja">#FFF3E0</color>
+    <color name="tarjetaCeleste">#E0F2F1</color>
+    <color name="tarjetaCafe">#EFEBE9</color>
+    <color name="tarjetaAviso">#FFE0B2</color>
+
+    <!-- Montos y avisos. -->
+    <color name="positivo">#2E7D32</color>
+    <color name="negativo">#C62828</color>
+    <color name="aviso">#E65100</color>
+
+    <!-- Estado de pago de una venta (y lote cerrado / stock bajo). -->
+    <color name="estadoPagado">#2E7D32</color>
+    <color name="estadoParcial">#F9A825</color>
+    <color name="estadoPendiente">#D32F2F</color>
 </resources>

@@ -3,7 +3,7 @@
     xmlns:card_view="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FAFAFA"
+    android:background="@color/fondo"
     android:padding="16dp">
 
     <LinearLayout
@@ -16,15 +16,15 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="12dp"
             android:text="Registrar gasto"
-            android:textColor="@color/cafeOscuro"
-            android:textSize="24sp"
+            android:textColor="@color/textoMarca"
+            android:fontFamily="serif" android:textSize="24sp"
             android:textStyle="bold" />
 
         <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             card_view:contentPadding="16dp"
-            android:backgroundTint="#FFFFFF"
+            android:backgroundTint="@color/superficie"
             card_view:cardCornerRadius="16dp"
             card_view:cardElevation="6dp">
 
@@ -45,7 +45,7 @@
                     style="?attr/materialButtonOutlinedStyle"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textColor="@color/cafeMedio"
+                    android:textColor="@color/textoMarca"
                     android:text="Hoy" />
 
                 <TextView android:text="Lote (opcional)" android:textStyle="bold" android:layout_marginTop="12dp" android:layout_width="wrap_content" android:layout_height="wrap_content" />
@@ -75,7 +75,7 @@
         <TextView
             android:text="Mantén presionado un gasto para borrarlo."
             android:textSize="12sp"
-            android:textColor="#757575"
+            android:textColor="@color/textoSecundario"
             android:layout_marginBottom="8dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
@@ -83,7 +83,7 @@
         <TextView
             android:id="@+id/tvSinGastos"
             android:text="Todavía no hay gastos registrados."
-            android:textColor="#757575"
+            android:textColor="@color/textoSecundario"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
 

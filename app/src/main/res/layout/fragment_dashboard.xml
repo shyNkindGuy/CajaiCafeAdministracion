@@ -2,7 +2,7 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FAFAFA"
+    android:background="@color/fondo"
     android:padding="16dp">
 
 
@@ -14,9 +14,9 @@
 
         <TextView
             android:text="Resumen de Ventas"
-            android:textSize="24sp"
+            android:fontFamily="serif" android:textSize="24sp"
             android:textStyle="bold"
-            android:textColor="@android:color/black"
+            android:textColor="@color/textoMarca"
             android:layout_marginBottom="16dp"
             android:layout_height="match_parent"  android:layout_width="match_parent"/>
 
@@ -31,7 +31,7 @@
                 android:layout_weight="1"
                 android:layout_height="100dp"
                 android:layout_marginEnd="8dp"
-                android:backgroundTint="#FFF3E0">
+                android:backgroundTint="@color/tarjetaNaranja">
                 <LinearLayout
                     android:gravity="center"
                     android:orientation="vertical"
@@ -54,7 +54,7 @@
                 android:layout_weight="1"
                 android:layout_height="100dp"
                 android:layout_marginStart="8dp"
-                android:backgroundTint="#E0F2F1">
+                android:backgroundTint="@color/tarjetaCeleste">
                 <LinearLayout
                     android:gravity="center"
                     android:orientation="vertical"
@@ -75,7 +75,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:backgroundTint="#E8F5E9"> <LinearLayout
+            android:backgroundTint="@color/tarjetaVerde"> <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
@@ -85,7 +85,7 @@
             <TextView
                 android:text="Total Pagado"
                 android:textSize="14sp"
-                android:textColor="#555555"
+                android:textColor="@color/textoSecundario"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"/>
 
@@ -94,7 +94,7 @@
                 android:text="S/ 0.00"
                 android:textSize="32sp"
                 android:textStyle="bold"
-                android:textColor="#2E7D32"
+                android:textColor="@color/positivo"
                 android:layout_marginTop="4dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"/>
@@ -147,7 +147,7 @@
         <TextView
             android:text="Reporte interno (no es comprobante de pago). El PDF y el CSV (ventas y gastos) se guardan en Descargas y se pueden compartir."
             android:textSize="12sp"
-            android:textColor="#757575"
+            android:textColor="@color/textoSecundario"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 
@@ -156,7 +156,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Generar PDF"
-            android:backgroundTint="#5D4037"
+            android:backgroundTint="@color/cafeOscuro"
             android:textColor="#FFFFFF"
             android:layout_marginTop="10dp"/>
 
@@ -166,7 +166,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="6dp"
-            android:textColor="#5D4037"
+            android:textColor="@color/textoMarca"
             android:text="Exportar CSV (Excel / Sheets)" />
 
         <TextView
@@ -174,7 +174,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="30dp"
-            android:textColor="#555555"
+            android:textColor="@color/textoSecundario"
             android:textSize="14sp" />
 
         <Button
@@ -184,7 +184,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:text="Cerrar sesión"
-            android:textColor="#5D4037" />
+            android:textColor="@color/textoMarca" />
 
     </LinearLayout>
 </ScrollView>

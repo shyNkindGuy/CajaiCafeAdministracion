@@ -25,7 +25,7 @@
             android:text="S/ 0.00"
             android:textStyle="bold"
             android:textSize="18sp"
-            android:textColor="#C62828"
+            android:textColor="@color/negativo"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
     </LinearLayout>
@@ -33,7 +33,7 @@
     <TextView
         android:id="@+id/tvDetalleCuenta"
         android:text=""
-        android:textColor="#555555"
+        android:textColor="@color/textoSecundario"
         android:layout_marginTop="2dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
@@ -45,6 +45,6 @@
         android:layout_height="wrap_content"
         android:layout_gravity="end"
         android:layout_marginTop="4dp"
-        android:textColor="#2E7D32"
+        android:textColor="@color/positivo"
         android:text="Recordar por WhatsApp" />
 </LinearLayout>

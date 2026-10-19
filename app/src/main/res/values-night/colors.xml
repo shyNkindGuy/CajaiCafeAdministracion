@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Modo oscuro: mismos nombres que values/colors.xml, con fondos café muy oscuro y textos claros. -->
+<resources>
+    <color name="marcaPrimario">#D7B9A8</color>
+    <color name="marcaSobrePrimario">#3E2723</color>
+    <color name="marcaContenedor">#4E342E</color>
+    <color name="marcaSobreContenedor">#F3E3D8</color>
+    <color name="marcaSecundario">#BCAAA4</color>
+
+    <color name="fondo">#1A1311</color>
+    <color name="superficie">#241B18</color>
+    <color name="superficieSuave">#2A201C</color>
+    <color name="borde">#5D4F4A</color>
+    <color name="texto">#F2E9E4</color>
+    <color name="textoSecundario">#BFB1A9</color>
+    <color name="textoMarca">#E3C7B5</color>
+
+    <color name="tarjetaVerde">#1D2A1F</color>
+    <color name="tarjetaNaranja">#2F2418</color>
+    <color name="tarjetaCeleste">#1A2928</color>
+    <color name="tarjetaCafe">#2B2320</color>
+    <color name="tarjetaAviso">#3A2812</color>
+
+    <color name="positivo">#81C784</color>
+    <color name="negativo">#EF9A9A</color>
+    <color name="aviso">#FFB74D</color>
+
+    <color name="estadoPagado">#81C784</color>
+    <color name="estadoParcial">#FFD54F</color>
+    <color name="estadoPendiente">#EF5350</color>
+</resources>
