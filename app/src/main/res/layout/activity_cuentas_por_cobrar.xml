@@ -29,7 +29,7 @@
             android:layout_height="wrap_content" />
 
         <TextView
-            android:text="Todas las ventas pendientes o con pago parcial, de la más antigua a la más nueva. El pago se registra en Historial (botón editar)."
+            android:text="Todas las ventas pendientes o con pago parcial, de la más antigua a la más nueva. El pago se registra en Movimientos → Ventas (botón editar)."
             android:textSize="12sp"
             android:textColor="@color/textoSecundario"
             android:layout_marginBottom="8dp"

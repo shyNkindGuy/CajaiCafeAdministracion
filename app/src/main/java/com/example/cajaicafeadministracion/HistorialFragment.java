@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.firebase.database.*;
 import java.util.*;
 
+/** Movimientos → Ventas: todas las ventas, la más reciente arriba, con editar pago y borrar (VentaAdapter). */
 public class HistorialFragment extends Fragment {
 
     private RecyclerView recyclerVentas;

@@ -13,18 +13,18 @@ molido con moledora propia → empacado en bolsas de 1/2 kg y 1/4 kg → venta.
 ## Acceso
 `LogoActivity` (splash) → `LoginActivity` si no hay sesión → `MainActivity`. Login con correo y
 contraseña de **Firebase Auth**, sin registro en la app: las cuentas se crean en la consola y solo
-entran las que estén en `usuarios/{uid} = true`. Cerrar sesión está al final de la pestaña Reportes.
+entran las que estén en `usuarios/{uid} = true`. Cerrar sesión está al final de la pestaña Más.
 Las reglas de la base de datos viven en `database.rules.json` (se publican a mano en la consola o
 con `firebase deploy --only database`); cada nodo nuevo necesita su entrada ahí o quedará bloqueado.
 
-## Pantallas (bottom nav en `MainActivity`)
+## Pantallas (bottom nav en `MainActivity`: Inicio · Vender · Lotes · Movimientos · Más)
 | Tab | Clase | Qué hace |
 |---|---|---|
 | Inicio (se abre al entrar) | `InicioFragment` → `CuentasPorCobrarActivity` | Resumen del mes elegido (`ResumenFinanciero`, con tests) y punto de equilibrio de cada lote abierto; "Ver todas las cuentas por cobrar" (saldo y recordatorio por WhatsApp en `CuentasPorCobrar`, con tests) |
-| Venta | `VentaFragment` | Venta rápida: chips de bolsa con su precio (marcada la de 1/2 kg), stepper − / + (mínimo 1) y cliente con autocompletado de los que más compran en las últimas 500 ventas (`VentaRapida`, con tests); registra la venta y descuenta el stock (del lote o del producto, ver Stock) con `runTransaction` |
-| Historial | `HistorialFragment` + `VentaAdapter` | Lista ventas, editar estado de pago, borrar (devuelve el stock) |
+| Vender | `VentaFragment` | Venta rápida: chips de bolsa con su precio (marcada la de 1/2 kg), stepper − / + (mínimo 1) y cliente con autocompletado de los que más compran en las últimas 500 ventas (`VentaRapida`, con tests); registra la venta y descuenta el stock (del lote o del producto, ver Stock) con `runTransaction` |
 | Lotes | `LotesFragment` → `NuevoLoteActivity`, `LoteDetalleActivity` | Costeo por costal y costo unitario (`CosteoLote`, con tests), stock por lote, cerrar lote |
-| Reportes | `DashboardFragment` → `GastoActivity` | Totales de bolsas, total cobrado; PDF por mes o por lote (contenido en `Reporte`, con tests → `GeneradorPdf` → `ArchivoDescargas`) y CSV de ventas y gastos (`ExportacionCsv`, con tests) con abrir/compartir; "Registrar gasto" (categorías fijas y validación en `ValidacionGasto`, con tests) |
+| Movimientos | `MovimientosFragment` (selector Ventas \| Gastos, fragments hijos) → `HistorialFragment` + `VentaAdapter`, `GastosFragment` → `GastoActivity` | Ventas: todas, editar estado de pago, borrar (devuelve el stock). Gastos: los últimos 100 por `fecha`, mantener presionado para borrar, "Registrar gasto" (`GastoActivity` es solo el formulario: categorías fijas y validación en `ValidacionGasto`, con tests; al guardar vuelve) |
+| Más | `DashboardFragment` → `CuentasPorCobrarActivity`, `GastoActivity` | Totales de bolsas y total cobrado de todas las fechas; atajos a cuentas por cobrar y registrar gasto; PDF por mes o por lote (contenido en `Reporte`, con tests → `GeneradorPdf` → `ArchivoDescargas`) y CSV de ventas y gastos (`ExportacionCsv`, con tests) con abrir/compartir; cerrar sesión |
 
 Precios: el total de una venta se calcula solo en `PrecioCalculator` (con tests). Nada de precios
 escritos en el código: todo se configura en `productos/{id}` en Firebase. Regla del negocio: la bolsa
@@ -70,7 +70,8 @@ los layouts **no se escriben colores hexadecimales**: se usan los nombres de `va
 `superficie`, `texto`, `textoSecundario`, `textoMarca`, `tarjeta*`, `positivo`, `negativo`, `aviso`,
 `estado*`), que tienen su versión oscura en `values-night/colors.xml`; en Java, `ContextCompat.getColor`.
 `cafeOscuro`/`cafeMedio` son relleno de botones con texto blanco (iguales en los dos modos). Títulos de
-pantalla en `serif` y tamaños de texto en `sp`. La paleta y la fuente finales las decide el dueño.
+pantalla en `serif` y tamaños de texto en `sp`. Barra de abajo: etiquetas a 11sp (`TextoBarraNavegacion`, si no
+"Movimientos" se corta) y píldora `cafeMedio` detrás del ícono elegido (`IndicadorBarraNavegacion`). La paleta y la fuente finales las decide el dueño.
 
 Convención: todo `addValueEventListener` guarda el listener en un campo y se quita en
 `onDestroyView` (fragments) u `onDestroy` (activities). En callbacks asíncronos no usar
