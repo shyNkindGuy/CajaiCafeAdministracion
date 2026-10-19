@@ -48,7 +48,7 @@ Leyenda: `[ ]` pendiente · `[x]` hecha (se marca dentro del PR que la resuelve)
 
 ## Fase 4 — Rediseño UI/UX
 - [x] **4.1 Tema Material 3 con colores de marca** (café/crema), modo oscuro, tipografía.
-- [ ] **4.2 Venta rápida**: chips de producto con precio, stepper de cantidad, cliente con
+- [x] **4.2 Venta rápida**: chips de producto con precio, stepper de cantidad, cliente con
   autocompletado de clientes frecuentes.
 - [ ] **4.3 Navegación final**: Inicio · Vender · Lotes · Movimientos · Más.
 

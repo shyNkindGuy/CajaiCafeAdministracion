@@ -10,6 +10,9 @@
         <item name="colorOnPrimaryContainer">@color/marcaSobreContenedor</item>
         <item name="colorSecondary">@color/marcaSecundario</item>
         <item name="colorOnSecondary">@color/marcaSobrePrimario</item>
+        <!-- Chip elegido en la venta rápida (4.2): sin esto Material 3 lo pinta lila. -->
+        <item name="colorSecondaryContainer">@color/marcaContenedor</item>
+        <item name="colorOnSecondaryContainer">@color/marcaSobreContenedor</item>
         <item name="colorTertiary">@color/positivo</item>
         <item name="android:colorBackground">@color/fondo</item>
         <item name="colorOnBackground">@color/texto</item>

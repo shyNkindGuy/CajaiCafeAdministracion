@@ -21,7 +21,7 @@ con `firebase deploy --only database`); cada nodo nuevo necesita su entrada ahí
 | Tab | Clase | Qué hace |
 |---|---|---|
 | Inicio (se abre al entrar) | `InicioFragment` → `CuentasPorCobrarActivity` | Resumen del mes elegido (`ResumenFinanciero`, con tests) y punto de equilibrio de cada lote abierto; "Ver todas las cuentas por cobrar" (saldo y recordatorio por WhatsApp en `CuentasPorCobrar`, con tests) |
-| Venta | `VentaFragment` | Registra una venta y descuenta el stock (del lote o del producto, ver Stock) con `runTransaction` |
+| Venta | `VentaFragment` | Venta rápida: chips de bolsa con su precio (marcada la de 1/2 kg), stepper − / + (mínimo 1) y cliente con autocompletado de los que más compran en las últimas 500 ventas (`VentaRapida`, con tests); registra la venta y descuenta el stock (del lote o del producto, ver Stock) con `runTransaction` |
 | Historial | `HistorialFragment` + `VentaAdapter` | Lista ventas, editar estado de pago, borrar (devuelve el stock) |
 | Lotes | `LotesFragment` → `NuevoLoteActivity`, `LoteDetalleActivity` | Costeo por costal y costo unitario (`CosteoLote`, con tests), stock por lote, cerrar lote |
 | Reportes | `DashboardFragment` → `GastoActivity` | Totales de bolsas, total cobrado; PDF por mes o por lote (contenido en `Reporte`, con tests → `GeneradorPdf` → `ArchivoDescargas`) y CSV de ventas y gastos (`ExportacionCsv`, con tests) con abrir/compartir; "Registrar gasto" (categorías fijas y validación en `ValidacionGasto`, con tests) |
